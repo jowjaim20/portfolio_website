@@ -80,12 +80,16 @@ const NumWrap: React.FC<{
   includeAll?: boolean;
   single?: boolean;
   twice?: boolean;
+  trice?: boolean;
+  fourTimes?: boolean;
 }> = ({
   num,
   include = true,
   includeAll = false,
   single = false,
   twice = false,
+  trice = false,
+  fourTimes = false,
 }) => {
   const id: any = num.toString();
   return (
@@ -93,7 +97,11 @@ const NumWrap: React.FC<{
       className={`${
         numColor[id]
       } flex justify-center items-center text-lg font-bold rounded-full ${
-        twice
+        fourTimes
+          ? " bg-gray-600"
+          : trice
+          ? " bg-red-700"
+          : twice
           ? " bg-cyan-500"
           : single
           ? " border-2"
@@ -220,6 +228,20 @@ const NumberGenerator = () => {
 
     return count === 2;
   };
+  const handleTrice = (nums: number, lastResults: Exclude[]) => {
+    const count = lastResults
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 3;
+  };
+  const handleFourtimes = (nums: number, lastResults: Exclude[]) => {
+    const count = lastResults
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 4;
+  };
   return (
     <div className="flex flex-col gap-2">
       <div className=" flex">
@@ -261,6 +283,8 @@ const NumberGenerator = () => {
                   num={num}
                   single={handleSingle(num, lastResults)}
                   twice={handleTwice(num, lastResults)}
+                  trice={handleTrice(num, lastResults)}
+                  fourTimes={handleFourtimes(num, lastResults)}
                 />
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
