@@ -78,14 +78,17 @@ const NumWrap: React.FC<{
   num: number;
   include?: boolean;
   includeAll?: boolean;
-}> = ({ num, include = true, includeAll = false }) => {
+  single?: boolean;
+}> = ({ num, include = true, includeAll = false, single = false }) => {
   const id: any = num.toString();
   return (
     <div
       className={`${
         numColor[id]
       } flex justify-center items-center text-lg font-bold rounded-full ${
-        includeAll
+        single
+          ? " border-2"
+          : includeAll
           ? "  bg-pink-600"
           : include
           ? " bg-sky-900"
@@ -193,6 +196,14 @@ const NumberGenerator = () => {
       .flat();
     return !forExcude.includes(num);
   };
+
+  const handleSingle = (nums: number, lastResults: Exclude[]) => {
+    const count = lastResults
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 1;
+  };
   return (
     <div className="flex flex-col gap-2">
       <div className=" flex">
@@ -230,7 +241,7 @@ const NumberGenerator = () => {
           .map((res) => (
             <div className="flex">
               {res.numbers.map((num) => (
-                <NumWrap num={num} />
+                <NumWrap num={num} single={handleSingle(num, lastResults)} />
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
                 {res.chance}
