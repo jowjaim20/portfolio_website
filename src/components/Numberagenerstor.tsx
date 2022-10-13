@@ -260,6 +260,10 @@ const NumberGenerator = () => {
             num={num}
             include={included(exclude, num)}
             includeAll={includedAll(lastResults, num)}
+            single={handleSingle(num, lastResults)}
+            twice={handleTwice(num, lastResults)}
+            trice={handleTrice(num, lastResults)}
+            fourTimes={handleFourtimes(num, lastResults)}
           />
         ))}
       </div>
@@ -279,13 +283,7 @@ const NumberGenerator = () => {
           .map((res) => (
             <div className="flex">
               {res.numbers.map((num) => (
-                <NumWrap
-                  num={num}
-                  single={handleSingle(num, lastResults)}
-                  twice={handleTwice(num, lastResults)}
-                  trice={handleTrice(num, lastResults)}
-                  fourTimes={handleFourtimes(num, lastResults)}
-                />
+                <NumWrap num={num} />
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
                 {res.chance}
