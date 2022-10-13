@@ -106,7 +106,7 @@ const NumWrap: React.FC<{
           : single
           ? " border-2"
           : includeAll
-          ? "  bg-pink-600"
+          ? " bg-green-700"
           : include
           ? " bg-sky-900"
           : " bg-purple-700"
