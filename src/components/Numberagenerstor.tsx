@@ -84,7 +84,7 @@ const NumWrap: React.FC<{
   fourTimes?: boolean;
 }> = ({
   num,
-  include = true,
+  include = false,
   includeAll = false,
   single = false,
   twice = false,
