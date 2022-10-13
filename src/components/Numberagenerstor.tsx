@@ -84,7 +84,7 @@ const NumWrap: React.FC<{
   fourTimes?: boolean;
 }> = ({
   num,
-  include = false,
+  include = true,
   includeAll = false,
   single = false,
   twice = false,
@@ -283,7 +283,13 @@ const NumberGenerator = () => {
           .map((res) => (
             <div className="flex">
               {res.numbers.map((num) => (
-                <NumWrap num={num} />
+                <NumWrap
+                  num={num}
+                  single={handleSingle(num, lastResults)}
+                  twice={handleTwice(num, lastResults)}
+                  trice={handleTrice(num, lastResults)}
+                  fourTimes={handleFourtimes(num, lastResults)}
+                />
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
                 {res.chance}
