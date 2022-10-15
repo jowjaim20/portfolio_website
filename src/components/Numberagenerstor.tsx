@@ -123,10 +123,10 @@ const NumberGenerator = () => {
     chance: 0,
   });
   const [input, setInput] = useState("");
-  const [inputChance, setInputChance] = useState<number>(0);
+  const [inputChance, setInputChance] = useState("");
   const [lottoNumbers, setLottoNumbers] = useState<number[]>([]);
   const [maxNumber, setMaxNumber] = useState<number>(58);
-  const [changeInputChance, setChangeInputChance] = useState<number>(0);
+  const [changeInputChance, setChangeInputChance] = useState("");
   const [exclude, setExclude] = useState<number[]>([]);
   const game = [42, 45, 49, 55, 58];
 
@@ -181,7 +181,7 @@ const NumberGenerator = () => {
       setExcludeObj({
         ...excludeObj,
         numbers: [...excludeObj.numbers, parseInt(input)],
-        chance: inputChance,
+        chance: +inputChance,
       });
       setInput("");
     }
@@ -353,20 +353,20 @@ const NumberGenerator = () => {
           min={0}
           type="number"
           value={inputChance}
-          onChange={(e) => setInputChance(+e.target.value)}
+          onChange={(e) => setInputChance(e.target.value)}
         />
         <input
           className=" bg-lime-100 max-w-lg"
           min={0}
           type="number"
           value={changeInputChance}
-          onChange={(e) => setChangeInputChance(+e.target.value)}
+          onChange={(e) => setChangeInputChance(e.target.value)}
         />
         <button
           className=" bg-lime-100 px-5 ml-1 max-w-lg"
           type="button"
           onClick={() =>
-            handleChangeChance(lastResults, inputChance, changeInputChance)
+            handleChangeChance(lastResults, +inputChance, +changeInputChance)
           }
         >
           Change
