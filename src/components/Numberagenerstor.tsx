@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useSyncExternalStore } from "react";
-import { json } from "stream/consumers";
 interface Exclude {
   numbers: number[];
   chance: number;
@@ -82,6 +81,9 @@ const NumWrap: React.FC<{
   twice?: boolean;
   trice?: boolean;
   fourTimes?: boolean;
+  fiveTimes?: boolean;
+  onClick?: () => void;
+  clicked?: number;
 }> = ({
   num,
   include = true,
@@ -90,27 +92,34 @@ const NumWrap: React.FC<{
   twice = false,
   trice = false,
   fourTimes = false,
+  fiveTimes = false,
+  clicked = 0,
 }) => {
   const id: any = num.toString();
   return (
     <div
       className={`${
-        numColor[id]
-      } flex justify-center items-center text-lg font-bold rounded-full ${
-        fourTimes
-          ? " bg-gray-600"
-          : trice
-          ? " bg-red-700"
-          : twice
-          ? " bg-cyan-500"
-          : single
-          ? " border-2"
-          : includeAll
-          ? " bg-green-700"
-          : include
-          ? " bg-sky-900"
-          : " bg-purple-700"
-      } w-10 h-10 p-2`}
+        clicked === num
+          ? " text-black border-2 border-yellow-400 text-[25px] font-extrabold"
+          : numColor[id]
+      }
+   flex justify-center items-center text-lg font-bold rounded-full ${
+     fiveTimes
+       ? "bg-neutral-900"
+       : fourTimes
+       ? " bg-gray-600"
+       : trice
+       ? " bg-red-700"
+       : twice
+       ? " bg-cyan-500"
+       : single
+       ? " border-2 border-red-900"
+       : includeAll
+       ? " bg-yellow-500"
+       : include
+       ? " bg-emerald-900"
+       : " bg-purple-700"
+   } w-10 h-10 p-2`}
     >
       {num}
     </div>
@@ -122,6 +131,7 @@ const NumberGenerator = () => {
     numbers: [],
     chance: 0,
   });
+  const [clicked, setClicked] = useState(0);
   const [input, setInput] = useState("");
   const [inputChance, setInputChance] = useState("");
   const [lottoNumbers, setLottoNumbers] = useState<number[]>([]);
@@ -264,6 +274,20 @@ const NumberGenerator = () => {
     return count === 4;
   };
 
+  const handleFivetimes = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 20
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 5;
+  };
   const handleChangeChance = (
     lastResults: Exclude[],
     inputChance: number,
@@ -278,8 +302,20 @@ const NumberGenerator = () => {
     });
     setlastResults(test);
   };
+
+  const handleChancesUporDown = (
+    lastResults: Exclude[],
+    inputChance: number
+  ) => {
+    const test = lastResults.map((res) => {
+      return { ...res, chance: res.chance + inputChance };
+    });
+    setlastResults(test);
+  };
+
   return (
     <div className="flex flex-col gap-2">
+      <br />
       <div className=" flex">
         {game.map((num) => (
           <div
@@ -292,15 +328,23 @@ const NumberGenerator = () => {
       </div>
       <div className="flex gap-1">
         {lottoNumbers.map((num) => (
-          <NumWrap
-            num={num}
-            include={included(exclude, num)}
-            includeAll={includedAll(lastResults, num)}
-            single={handleSingle(num, lastResults)}
-            twice={handleTwice(num, lastResults, 28)}
-            trice={handleTrice(num, lastResults, 28)}
-            fourTimes={handleFourtimes(num, lastResults, 28)}
-          />
+          <div
+            onClick={() => {
+              console.log(num);
+              setClicked(num);
+            }}
+          >
+            <NumWrap
+              num={num}
+              includeAll={includedAll(lastResults, num)}
+              include={included(exclude, num)}
+              single={handleSingle(num, lastResults)}
+              twice={handleTwice(num, lastResults, 28)}
+              trice={handleTrice(num, lastResults, 28)}
+              fourTimes={handleFourtimes(num, lastResults, 28)}
+              fiveTimes={handleFivetimes(num, lastResults, 28)}
+            />
+          </div>
         ))}
       </div>
       <div className=" flex justify-center items-center">
@@ -313,25 +357,41 @@ const NumberGenerator = () => {
         </button>
       </div>
       <div>
-        <div>last result</div>
+        <div>
+          <div>last result</div>
+          <span>{lastResults.length}</span>
+        </div>
+        <hr />
+
         {lastResults
           .sort((a, b) => a.chance - b.chance)
           .map((res) => (
             <div className="flex">
               {res.numbers.map((num) => (
-                <NumWrap
-                  num={num}
-                  single={handleSingle(num, lastResults)}
-                  twice={handleTwice(num, lastResults, res.chance)}
-                  trice={handleTrice(num, lastResults, res.chance)}
-                  fourTimes={handleFourtimes(num, lastResults, res.chance)}
-                />
+                <div
+                  onClick={() => {
+                    console.log(num);
+                    setClicked(num);
+                  }}
+                >
+                  <NumWrap
+                    clicked={clicked}
+                    num={num}
+                    single={handleSingle(num, lastResults)}
+                    twice={handleTwice(num, lastResults, res.chance)}
+                    trice={handleTrice(num, lastResults, res.chance)}
+                    fourTimes={handleFourtimes(num, lastResults, res.chance)}
+                    fiveTimes={handleFivetimes(num, lastResults, res.chance)}
+                  />
+                </div>
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
                 {res.chance}
               </div>
               <button
-                className=" bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white"
+                className={`${
+                  lastResults.length <= 20 ? "hidden" : ""
+                } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
                 onClick={() => handleRemove(res.chance)}
               >
                 x
@@ -339,7 +399,6 @@ const NumberGenerator = () => {
             </div>
           ))}
       </div>
-
       <div>exclude</div>
       {
         <div className="flex">
@@ -392,7 +451,12 @@ const NumberGenerator = () => {
         >
           Change
         </button>
+        <div>
+          <div onClick={() => handleChancesUporDown(lastResults, 2)}>Up</div>
+          <div onClick={() => handleChancesUporDown(lastResults, -2)}>Down</div>
+        </div>
       </div>
+      qq
       <button
         type="button"
         onClick={() => handleAddLast(lastResults, excludeObj)}
