@@ -226,9 +226,7 @@ const NumberGenerator = () => {
     lastResults: Exclude[],
     chance: number = 0
   ) => {
-    const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance < res.chance + 20
-    );
+    const data = lastResults.filter((res) => res.chance <= chance + 20);
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
@@ -240,9 +238,7 @@ const NumberGenerator = () => {
     lastResults: Exclude[],
     chance: number = 0
   ) => {
-    const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance < res.chance + 20
-    );
+    const data = lastResults.filter((res) => res.chance <= chance + 20);
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
@@ -254,9 +250,7 @@ const NumberGenerator = () => {
     lastResults: Exclude[],
     chance: number = 0
   ) => {
-    const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance < res.chance + 20
-    );
+    const data = lastResults.filter((res) => res.chance <= chance + 20);
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
