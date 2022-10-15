@@ -227,7 +227,7 @@ const NumberGenerator = () => {
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance <= chance + 20 && res.chance <= chance
+      (res) => res.chance >= chance && res.chance <= chance + 20
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
@@ -241,7 +241,7 @@ const NumberGenerator = () => {
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance <= chance + 20 && res.chance <= chance
+      (res) => res.chance >= chance && res.chance <= chance + 20
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
@@ -255,7 +255,7 @@ const NumberGenerator = () => {
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance <= chance + 20 && res.chance <= chance
+      (res) => res.chance >= chance && res.chance <= chance + 20
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
