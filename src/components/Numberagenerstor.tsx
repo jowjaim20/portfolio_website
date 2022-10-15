@@ -297,9 +297,9 @@ const NumberGenerator = () => {
             include={included(exclude, num)}
             includeAll={includedAll(lastResults, num)}
             single={handleSingle(num, lastResults)}
-            twice={handleTwice(num, lastResults)}
-            trice={handleTrice(num, lastResults)}
-            fourTimes={handleFourtimes(num, lastResults)}
+            twice={handleTwice(num, lastResults, 28)}
+            trice={handleTrice(num, lastResults, 28)}
+            fourTimes={handleFourtimes(num, lastResults, 28)}
           />
         ))}
       </div>
