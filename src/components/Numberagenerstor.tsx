@@ -123,10 +123,10 @@ const NumberGenerator = () => {
     chance: 0,
   });
   const [input, setInput] = useState("");
-  const [inputChance, setInputChance] = useState("");
+  const [inputChance, setInputChance] = useState<number>(0);
   const [lottoNumbers, setLottoNumbers] = useState<number[]>([]);
-  const [maxNumber, setMaxNumber] = useState<number>(59);
-  const [reload, setReload] = useState(false);
+  const [maxNumber, setMaxNumber] = useState<number>(58);
+  const [changeInputChance, setChangeInputChance] = useState<number>(0);
   const [exclude, setExclude] = useState<number[]>([]);
   const game = [42, 45, 49, 55, 58];
 
@@ -181,7 +181,7 @@ const NumberGenerator = () => {
       setExcludeObj({
         ...excludeObj,
         numbers: [...excludeObj.numbers, parseInt(input)],
-        chance: parseInt(inputChance),
+        chance: inputChance,
       });
       setInput("");
     }
@@ -241,6 +241,21 @@ const NumberGenerator = () => {
       .flat().length;
 
     return count === 4;
+  };
+
+  const handleChangeChance = (
+    lastResults: Exclude[],
+    inputChance: number,
+    changeInputChance: number
+  ) => {
+    const test = lastResults.map((res) => {
+      if (res.chance === inputChance) {
+        return { ...res, chance: changeInputChance };
+      } else {
+        return res;
+      }
+    });
+    setlastResults(test);
   };
   return (
     <div className="flex flex-col gap-2">
@@ -324,17 +339,39 @@ const NumberGenerator = () => {
           onChange={(e) => setInput(e.target.value)}
         />
 
-        <button type="button" onClick={handleAddExclude}>
+        <button
+          className=" bg-lime-100 px-5 ml-1 max-w-lg"
+          type="button"
+          onClick={handleAddExclude}
+        >
           add
         </button>
       </div>
-      <input
-        min={0}
-        type="number"
-        value={inputChance}
-        onChange={(e) => setInputChance(e.target.value)}
-      />
-
+      <div>
+        <input
+          className=" bg-lime-100 max-w-lg"
+          min={0}
+          type="number"
+          value={inputChance}
+          onChange={(e) => setInputChance(+e.target.value)}
+        />
+        <input
+          className=" bg-lime-100 max-w-lg"
+          min={0}
+          type="number"
+          value={changeInputChance}
+          onChange={(e) => setChangeInputChance(+e.target.value)}
+        />
+        <button
+          className=" bg-lime-100 px-5 ml-1 max-w-lg"
+          type="button"
+          onClick={() =>
+            handleChangeChance(lastResults, inputChance, changeInputChance)
+          }
+        >
+          Change
+        </button>
+      </div>
       <button
         type="button"
         onClick={() => handleAddLast(lastResults, excludeObj)}
