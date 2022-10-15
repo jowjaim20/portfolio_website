@@ -319,7 +319,9 @@ const NumberGenerator = () => {
       <div className=" flex">
         {game.map((num) => (
           <div
-            className=" flex justify-center items-center text-lg font-bold rounded-full bg-lime-500 w-10 h-10 p-2"
+            className={`flex justify-center items-center text-lg font-bold rounded-full ${
+              maxNumber === num ? " bg-lime-500" : "bg-green-600"
+            } w-10 h-10 p-2`}
             onClick={() => setMaxNumber(num)}
           >
             {num}
