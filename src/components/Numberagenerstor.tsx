@@ -221,22 +221,43 @@ const NumberGenerator = () => {
 
     return count === 1;
   };
-  const handleTwice = (nums: number, lastResults: Exclude[]) => {
-    const count = lastResults
+  const handleTwice = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance < res.chance + 20
+    );
+    const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
 
     return count === 2;
   };
-  const handleTrice = (nums: number, lastResults: Exclude[]) => {
-    const count = lastResults
+  const handleTrice = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance < res.chance + 20
+    );
+    const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
 
     return count === 3;
   };
-  const handleFourtimes = (nums: number, lastResults: Exclude[]) => {
-    const count = lastResults
+  const handleFourtimes = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance < res.chance + 20
+    );
+    const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
 
@@ -301,9 +322,9 @@ const NumberGenerator = () => {
                 <NumWrap
                   num={num}
                   single={handleSingle(num, lastResults)}
-                  twice={handleTwice(num, lastResults)}
-                  trice={handleTrice(num, lastResults)}
-                  fourTimes={handleFourtimes(num, lastResults)}
+                  twice={handleTwice(num, lastResults, res.chance)}
+                  trice={handleTrice(num, lastResults, res.chance)}
+                  fourTimes={handleFourtimes(num, lastResults, res.chance)}
                 />
               ))}
               <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
