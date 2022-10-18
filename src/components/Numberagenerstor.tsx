@@ -100,25 +100,25 @@ const NumWrap: React.FC<{
     <div
       className={`${
         clicked === num
-          ? " text-black border-2 border-yellow-400 text-[25px] font-extrabold"
+          ? " text-black border-2 border-black text-[25px] font-extrabold"
           : numColor[id]
       }
-   flex justify-center items-center text-lg font-bold rounded-full ${
+   flex justify-center items-center text-lg font-bold rounded-full shadow-inner shadow-gray-900 ${
      fiveTimes
        ? "bg-neutral-900"
        : fourTimes
-       ? " bg-gray-600"
+       ? " bg-gray-800"
        : trice
-       ? " bg-red-700"
+       ? " bg-red-900"
        : twice
-       ? " bg-cyan-500"
+       ? " bg-cyan-900"
        : single
-       ? " border-2 border-red-900"
+       ? " border-2 border-slate-50"
        : includeAll
-       ? " bg-yellow-500"
+       ? " bg-yellow-900"
        : include
        ? " bg-emerald-900"
-       : " bg-purple-700"
+       : " bg-purple-900"
    } w-10 h-10 p-2`}
     >
       {num}
@@ -315,7 +315,6 @@ const NumberGenerator = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <br />
       <div className=" flex">
         {game.map((num) => (
           <div
@@ -329,25 +328,37 @@ const NumberGenerator = () => {
         ))}
       </div>
       <div className="flex gap-1">
-        {lottoNumbers.map((num) => (
-          <div
-            onClick={() => {
-              console.log(num);
-              setClicked(num);
-            }}
-          >
-            <NumWrap
-              num={num}
-              includeAll={includedAll(lastResults, num)}
-              include={included(exclude, num)}
-              single={handleSingle(num, lastResults)}
-              twice={handleTwice(num, lastResults, 28)}
-              trice={handleTrice(num, lastResults, 28)}
-              fourTimes={handleFourtimes(num, lastResults, 28)}
-              fiveTimes={handleFivetimes(num, lastResults, 28)}
-            />
+        <div className=" flex gap-2">
+          <div className="flex gap-1">
+            {lottoNumbers.map((num) => (
+              <div
+                onClick={() => {
+                  console.log(num);
+                  setClicked(num);
+                }}
+              >
+                <NumWrap
+                  num={num}
+                  includeAll={includedAll(lastResults, num)}
+                  include={included(exclude, num)}
+                  single={handleSingle(num, lastResults)}
+                  twice={handleTwice(num, lastResults, 28)}
+                  trice={handleTrice(num, lastResults, 28)}
+                  fourTimes={handleFourtimes(num, lastResults, 28)}
+                  fiveTimes={handleFivetimes(num, lastResults, 28)}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+          <button
+            className=" px-2 py-0.5 bg-lime-600 rounded-md"
+            onClick={() =>
+              handleAddLast(lastResults, { numbers: lottoNumbers, chance: 28 })
+            }
+          >
+            ADD
+          </button>
+        </div>
       </div>
       <div className=" flex justify-center items-center">
         <button
@@ -435,6 +446,7 @@ const NumberGenerator = () => {
           min={0}
           type="number"
           value={inputChance}
+          
           onChange={(e) => setInputChance(e.target.value)}
         />
         <input
