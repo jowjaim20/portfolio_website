@@ -79,20 +79,32 @@ const NumWrap: React.FC<{
   includeAll?: boolean;
   single?: boolean;
   twice?: boolean;
+  twice5Draws?: boolean;
+  twice3Draws?: boolean;
   trice?: boolean;
+  trice5Draws?: boolean;
+  trice3Draws?: boolean;
   fourTimes?: boolean;
   fiveTimes?: boolean;
   onClick?: () => void;
   clicked?: number;
+  once20Draw?: boolean;
+  once10Draw?: boolean;
 }> = ({
   num,
   include = true,
   includeAll = false,
+  trice3Draws = false,
+  twice3Draws = false,
+  trice5Draws = false,
+  twice5Draws = false,
   single = false,
   twice = false,
   trice = false,
   fourTimes = false,
   fiveTimes = false,
+  once20Draw = false,
+  once10Draw = false,
   clicked = 0,
 }) => {
   const id: any = num.toString();
@@ -104,20 +116,32 @@ const NumWrap: React.FC<{
           : numColor[id]
       }
    flex justify-center items-center text-lg font-bold rounded-full shadow-inner shadow-gray-900 ${
-     fiveTimes
-       ? "bg-neutral-900"
+     once20Draw
+       ? " bg-white"
+       : once10Draw
+       ? " bg-emerald-700"
+       : trice3Draws
+       ? " bg-rose-200"
+       : twice3Draws
+       ? "bg-[#00E3FF]"
+       : trice5Draws
+       ? " bg-[#ff57e2]"
+       : twice5Draws
+       ? " bg-[#a99eff]"
+       : fiveTimes
+       ? "bg-black"
        : fourTimes
-       ? " bg-gray-800"
+       ? " bg-gray-400"
        : trice
-       ? " bg-red-900"
+       ? " bg-[#ff0000]"
        : twice
-       ? " bg-cyan-900"
+       ? " bg-[#0000ff]"
        : single
        ? " border-2 border-slate-50"
        : includeAll
        ? " bg-yellow-900"
        : include
-       ? " bg-emerald-900"
+       ? " bg-pink-500"
        : " bg-purple-900"
    } w-10 h-10 p-2`}
     >
@@ -126,6 +150,7 @@ const NumWrap: React.FC<{
   );
 };
 const NumberGenerator = () => {
+  const [all, setAll] = useState<number[]>([]);
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
   const [excludeObj, setExcludeObj] = useState<Exclude>({
     numbers: [],
@@ -162,6 +187,11 @@ const NumberGenerator = () => {
     const data = localStorage.getItem(maxNumber.toString());
     const data2 = data !== null ? JSON.parse(data) : [];
     //console.log(data2);
+    const all = [];
+    for (let index = 0; index < maxNumber; index++) {
+      all.push(index + 1);
+    }
+    setAll(all);
     setlastResults(data2);
   }, [maxNumber]);
 
@@ -177,7 +207,7 @@ const NumberGenerator = () => {
         winningNum.push(random);
       } else {
         const num = generate(100);
-        if (num <= 10 && !winningNum.includes(random)) {
+        if (num <= 1 && !winningNum.includes(random)) {
           winningNum.push(random);
         }
       }
@@ -237,7 +267,7 @@ const NumberGenerator = () => {
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance <= chance + 20
+      (res) => res.chance >= chance && res.chance <= chance + 18
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
@@ -245,13 +275,42 @@ const NumberGenerator = () => {
 
     return count === 2;
   };
+  const handleTwice5Draws = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 8
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 2;
+  };
+  const handleTwice3Draws = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 4
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 2;
+  };
+
   const handleTrice = (
     nums: number,
     lastResults: Exclude[],
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance <= chance + 20
+      (res) => res.chance >= chance && res.chance <= chance + 18
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
@@ -259,13 +318,42 @@ const NumberGenerator = () => {
 
     return count === 3;
   };
+  const handleTrice5Draws = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 8
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 3;
+  };
+  const handleTrice3Draws = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 4
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 3;
+  };
+
   const handleFourtimes = (
     nums: number,
     lastResults: Exclude[],
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance <= chance + 20
+      (res) => res.chance >= chance && res.chance <= chance + 18
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
@@ -280,13 +368,41 @@ const NumberGenerator = () => {
     chance: number = 0
   ) => {
     const data = lastResults.filter(
-      (res) => res.chance >= chance && res.chance <= chance + 20
+      (res) => res.chance >= chance && res.chance <= chance + 18
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))
       .flat().length;
 
     return count === 5;
+  };
+  const handleOnce20draw = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 38
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 1;
+  };
+  const handleOnce10draw = (
+    nums: number,
+    lastResults: Exclude[],
+    chance: number = 0
+  ) => {
+    const data = lastResults.filter(
+      (res) => res.chance >= chance && res.chance <= chance + 18
+    );
+    const count = data
+      .map((data) => data.numbers.filter((num) => num === nums))
+      .flat().length;
+
+    return count === 1;
   };
   const handleChangeChance = (
     lastResults: Exclude[],
@@ -343,9 +459,15 @@ const NumberGenerator = () => {
                   include={included(exclude, num)}
                   single={handleSingle(num, lastResults)}
                   twice={handleTwice(num, lastResults, 28)}
+                  twice5Draws={handleTwice5Draws(num, lastResults, 28)}
+                  trice5Draws={handleTrice5Draws(num, lastResults, 28)}
+                  twice3Draws={handleTwice3Draws(num, lastResults, 28)}
+                  trice3Draws={handleTrice3Draws(num, lastResults, 28)}
                   trice={handleTrice(num, lastResults, 28)}
                   fourTimes={handleFourtimes(num, lastResults, 28)}
                   fiveTimes={handleFivetimes(num, lastResults, 28)}
+                  once20Draw={handleOnce20draw(num, lastResults, 28)}
+                  once10Draw={handleOnce10draw(num, lastResults, 28)}
                 />
               </div>
             ))}
@@ -378,6 +500,7 @@ const NumberGenerator = () => {
 
         {lastResults
           .sort((a, b) => a.chance - b.chance)
+          .filter((res) => res.numbers.length === 6)
           .map((res) => (
             <div className="flex">
               {res.numbers.map((num) => (
@@ -393,8 +516,30 @@ const NumberGenerator = () => {
                     single={handleSingle(num, lastResults)}
                     twice={handleTwice(num, lastResults, res.chance)}
                     trice={handleTrice(num, lastResults, res.chance)}
+                    twice5Draws={handleTwice5Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    trice5Draws={handleTrice5Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    twice3Draws={handleTwice3Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    trice3Draws={handleTrice3Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
                     fourTimes={handleFourtimes(num, lastResults, res.chance)}
                     fiveTimes={handleFivetimes(num, lastResults, res.chance)}
+                    once20Draw={handleOnce20draw(num, lastResults, res.chance)}
+                    once10Draw={handleOnce10draw(num, lastResults, res.chance)}
                   />
                 </div>
               ))}
@@ -446,7 +591,6 @@ const NumberGenerator = () => {
           min={0}
           type="number"
           value={inputChance}
-          
           onChange={(e) => setInputChance(e.target.value)}
         />
         <input
@@ -477,6 +621,73 @@ const NumberGenerator = () => {
       >
         add lastresult
       </button>
+      <button
+        onClick={() =>
+          setlastResults([...lastResults, { numbers: all, chance: 28 }])
+        }
+      >
+        showAll
+      </button>
+      <div className="">
+        {lastResults
+          .sort((a, b) => a.chance - b.chance)
+          .filter((res) => res.numbers.length > 6)
+          .map((res) => (
+            <div className="grid grid-cols-6">
+              {res.numbers.map((num) => (
+                <div
+                  onClick={() => {
+                    console.log(num);
+                    setClicked(num);
+                  }}
+                >
+                  <NumWrap
+                    clicked={clicked}
+                    num={num}
+                    single={handleSingle(num, lastResults)}
+                    twice={handleTwice(num, lastResults, res.chance)}
+                    trice={handleTrice(num, lastResults, res.chance)}
+                    twice5Draws={handleTwice5Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    trice5Draws={handleTrice5Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    twice3Draws={handleTwice3Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    trice3Draws={handleTrice3Draws(
+                      num,
+                      lastResults,
+                      res.chance
+                    )}
+                    fourTimes={handleFourtimes(num, lastResults, res.chance)}
+                    fiveTimes={handleFivetimes(num, lastResults, res.chance)}
+                    once20Draw={handleOnce20draw(num, lastResults, res.chance)}
+                    once10Draw={handleOnce10draw(num, lastResults, res.chance)}
+                  />
+                </div>
+              ))}
+              <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                {res.chance}
+              </div>
+              <button
+                className={`${
+                  lastResults.length <= 20 ? "hidden" : ""
+                } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                onClick={() => handleRemove(res.chance)}
+              >
+                x
+              </button>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };

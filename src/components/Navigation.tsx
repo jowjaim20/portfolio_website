@@ -13,7 +13,7 @@ const Navigation = () => {
           Skills
         </span>
         <span className=" p-2 text-sm bg-lime-300 rounded-md flex justify-center items-center">
-          Projects
+          NumberGenerator
         </span>
       </div>
       <div className=" flex">
