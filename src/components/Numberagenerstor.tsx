@@ -432,6 +432,35 @@ const NumberGenerator = () => {
     });
     setlastResults(test);
   };
+  // include = true,
+  // includeAll = false,
+  // trice3Draws = false,
+  // twice3Draws = false,
+  // trice5Draws = false,
+  // twice5Draws = false,
+  // single = false,
+  // twice = false,
+  // trice = false,
+  // fourTimes = false,
+  // fiveTimes = false,
+  // once20Draw = false,
+  // once10Draw = false,
+  // clicked = 0,
+  const suggestCombo = [
+    { num: 20, once20Draw: true },
+    { num: 20, once20Draw: true },
+    { num: 10, twice: true },
+    { num: 10, twice: true },
+    { num: 3, twice3Draws: true },
+    { num: 3, twice3Draws: true },
+    { num: 10, once10Draw: true },
+    { num: 10, once10Draw: true },
+    { num: 5, twice5Draws: true },
+    { num: 10, trice: true },
+
+    { num: 3, trice3Draws: true },
+    { num: 5, trice5Draws: true },
+  ];
 
   return (
     <div className="flex flex-col gap-2">
@@ -498,6 +527,11 @@ const NumberGenerator = () => {
       <div>
         <div>
           <div>last result</div>
+          <div className=" flex">
+            {suggestCombo.map((s) => (
+              <NumWrap {...s} />
+            ))}
+          </div>
           <span>{lastResults.length}</span>
         </div>
         <hr />
