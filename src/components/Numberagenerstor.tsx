@@ -502,7 +502,7 @@ const NumberGenerator = () => {
         </div>
         <hr />
         <div className=" flex flex-col md:flex-row gap-2">
-          <div className=" h-[400px] overflow-y-scroll w-fit">
+          <div className=" h-[400px] overflow-y-scroll w-[240px]">
             {lastResults
               .sort((a, b) => a.chance - b.chance)
               .filter((res) => res.numbers.length === 6)
