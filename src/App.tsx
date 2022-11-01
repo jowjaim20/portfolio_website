@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="">
       <Navigation />
-      <NumberGenerator/>
+      <NumberGenerator />
     </div>
   );
 }
