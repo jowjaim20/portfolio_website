@@ -501,7 +501,7 @@ const NumberGenerator = () => {
           <span>{lastResults.length}</span>
         </div>
         <hr />
-        <div className=" flex">
+        <div className=" flex flex-col md:flex-row gap-2">
           <div className=" h-[400px] overflow-y-scroll w-fit">
             {lastResults
               .sort((a, b) => a.chance - b.chance)
@@ -578,7 +578,7 @@ const NumberGenerator = () => {
                 </div>
               ))}
           </div>
-          <div className="">
+          <div className=" h-[400px] overflow-y-scroll w-fit">
             {lastResultsPredict
               .sort((a, b) => a.chance - b.chance)
               .filter((res) => res.numbers.length > 6)
