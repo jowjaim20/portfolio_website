@@ -242,6 +242,7 @@ const NumberGenerator = () => {
     numbers: [],
     chance: 0,
   });
+  const [showClose, setShowClose] = useState(false);
   const [clicked, setClicked] = useState(0);
   const [input, setInput] = useState("");
   const [inputChance, setInputChance] = useState("");
@@ -274,7 +275,9 @@ const NumberGenerator = () => {
     let data = [];
     const filtered = (index: number) => {
       const data = all.filter((num: any) => {
-        const data = lastResults.map((result: any) => result.numbers[index]);
+        const data = lastResults
+          .filter((result: Exclude) => result.chance < 76)
+          .map((result: Exclude) => result.numbers[index]);
         const dat2 = data.includes(num);
         //console.log(data);
         return !dat2;
@@ -685,7 +688,7 @@ const NumberGenerator = () => {
         </div>
         <hr />
         <div className=" flex flex-col md:flex-row gap-2">
-          <div className=" h-[400px] overflow-y-scroll w-[240px]">
+          <div className=" h-[400px] overflow-y-scroll w-fit">
             {lastResults
               .sort((a, b) => a.chance - b.chance)
               .filter((res) => res.numbers.length === 6)
@@ -747,17 +750,21 @@ const NumberGenerator = () => {
                       />
                     </div>
                   ))}
-                  <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
-                    {res.chance}
-                  </div>
-                  <button
+                  <div
                     className={`${
-                      lastResults.length <= 20 ? "hidden" : ""
-                    } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                    onClick={() => handleRemove(res.chance)}
+                      showClose ? "" : "hidden"
+                    } bg-red-600 flex justify-center items-center rounded-full text-white w-fit`}
                   >
-                    x
-                  </button>
+                    <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                      {res.chance}
+                    </div>
+                    <button
+                      className={` bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                      onClick={() => handleRemove(res.chance)}
+                    >
+                      x
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>
@@ -924,6 +931,9 @@ const NumberGenerator = () => {
         onClick={() => handleAddLast(lastResults, excludeObj)}
       >
         add lastresult
+      </button>
+      <button type="button" onClick={() => setShowClose(!showClose)}>
+        ShowClose
       </button>
     </div>
   );
