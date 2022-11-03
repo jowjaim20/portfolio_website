@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useSyncExternalStore } from "react";
+import { isDataView } from "util/types";
 interface Exclude {
   numbers: number[];
   chance: number;
+}
+
+interface Count {
+  num: number;
+  count: number;
 }
 interface LastResult {
   week1: Exclude;
@@ -149,6 +155,84 @@ const NumWrap: React.FC<{
     </div>
   );
 };
+
+const NumWrap2: React.FC<{
+  num: number;
+  include?: boolean;
+  includeAll?: boolean;
+  single?: boolean;
+  twice?: boolean;
+  twice5Draws?: boolean;
+  twice3Draws?: boolean;
+  trice?: boolean;
+  trice5Draws?: boolean;
+  trice3Draws?: boolean;
+  fourTimes?: boolean;
+  fiveTimes?: boolean;
+  onClick?: () => void;
+  clicked?: number;
+  once20Draw?: boolean;
+  once10Draw?: boolean;
+}> = ({
+  num,
+  include = true,
+  includeAll = false,
+  trice3Draws = false,
+  twice3Draws = false,
+  trice5Draws = false,
+  twice5Draws = false,
+  single = false,
+  twice = false,
+  trice = false,
+  fourTimes = false,
+  fiveTimes = false,
+  once20Draw = false,
+  once10Draw = false,
+  clicked = 0,
+}) => {
+  const id: any = num.toString();
+  return (
+    <div
+      className={` absolute z-30 -top-1 -right-1${
+        clicked === num
+          ? " text-fuchsia-900 border-2 border-black text-[25px] font-extrabold"
+          : " text-white "
+      }
+   flex justify-center items-center text-lg font-bold rounded-full shadow-inner shadow-gray-900 ${
+     once20Draw
+       ? " bg-white"
+       : once10Draw
+       ? " bg-[#53ff7e]"
+       : trice3Draws
+       ? " bg-rose-200"
+       : twice3Draws
+       ? "bg-[#00E3FF]"
+       : trice5Draws
+       ? " bg-[#ff57e2]"
+       : twice5Draws
+       ? " bg-[#a99eff]"
+       : fiveTimes
+       ? "bg-black"
+       : fourTimes
+       ? " bg-gray-400"
+       : trice
+       ? " bg-[#ff0000]"
+       : twice
+       ? " bg-[#4d88ff]"
+       : single
+       ? " border-2 border-slate-50"
+       : includeAll
+       ? " bg-yellow-900"
+       : include
+       ? " bg-pink-500"
+       : " bg-purple-900"
+   } w-3 h-3 p-2`}
+    >
+      {num}
+    </div>
+  );
+};
+
 const NumberGenerator = () => {
   const [all, setAll] = useState<number[]>([]);
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
@@ -165,6 +249,7 @@ const NumberGenerator = () => {
   const [maxNumber, setMaxNumber] = useState<number>(58);
   const [changeInputChance, setChangeInputChance] = useState("");
   const [exclude, setExclude] = useState<number[]>([]);
+  const [count, setCount] = useState<Count[]>([]);
   const game = [42, 45, 49, 55, 58];
 
   const generate = (percent?: number) => {
@@ -185,6 +270,34 @@ const NumberGenerator = () => {
     return forExcude;
   };
 
+  const identifyNotIncluded = (lastResults: any, all: any) => {
+    let data = [];
+    const filtered = (index: number) => {
+      const data = all.filter((num: any) => {
+        const data = lastResults.map((result: any) => result.numbers[index]);
+        const dat2 = data.includes(num);
+        //console.log(data);
+        return !dat2;
+      });
+      return data;
+    };
+
+    for (let index = 0; index < 6; index++) {
+      data.push(filtered(index));
+    }
+
+    const data2 = data.flat();
+    const countObj = all.map((num: number) => {
+      const count = data2.filter((data) => data === num);
+      return {
+        num: num,
+        count: count.length,
+      };
+    });
+    setCount(countObj);
+    return [1, 2];
+  };
+
   useEffect(() => {
     const data = localStorage.getItem(maxNumber.toString());
     const data2 = data !== null ? JSON.parse(data) : [];
@@ -193,6 +306,8 @@ const NumberGenerator = () => {
     for (let index = 0; index < maxNumber; index++) {
       all.push(index + 1);
     }
+
+    identifyNotIncluded(data2, all);
     setAll(all);
     setlastResults(data2);
   }, [maxNumber]);
@@ -432,6 +547,7 @@ const NumberGenerator = () => {
     });
     setlastResults(test);
   };
+
   // include = true,
   // includeAll = false,
   // trice3Draws = false,
@@ -446,21 +562,54 @@ const NumberGenerator = () => {
   // once20Draw = false,
   // once10Draw = false,
   // clicked = 0,
-  const suggestCombo = [
-    { num: 20, once20Draw: true },
-    { num: 20, once20Draw: true },
-    { num: 10, twice: true },
-    { num: 10, twice: true },
-    { num: 3, twice3Draws: true },
-    { num: 3, twice3Draws: true },
-    { num: 10, once10Draw: true },
-    { num: 10, once10Draw: true },
-    { num: 5, twice5Draws: true },
-    { num: 10, trice: true },
+  const suggestCombo: any = {
+    42: [
+      { num: 10, twice: true },
+      { num: 10, twice: true },
+      { num: 3, twice3Draws: true },
+      { num: 3, twice3Draws: true },
+      { num: 5, twice5Draws: true },
+      { num: 5, twice5Draws: true },
+      { num: 10, once10Draw: true },
+      { num: 10, once10Draw: true },
+      { num: 10, trice: true },
+      { num: 20, once20Draw: true },
+      { num: 5, trice5Draws: true },
+      { num: 3, trice3Draws: true },
+    ],
+    45: [],
+    49: [
+      { num: 10, twice: true },
+      { num: 10, twice: true },
+      { num: 20, once20Draw: true },
+      { num: 20, once20Draw: true },
 
-    { num: 3, trice3Draws: true },
-    { num: 5, trice5Draws: true },
-  ];
+      { num: 5, twice5Draws: true },
+      { num: 5, twice5Draws: true },
+      { num: 3, twice3Draws: true },
+      { num: 3, twice3Draws: true },
+
+      { num: 10, once10Draw: true },
+      { num: 10, trice: true },
+      { num: 5, trice5Draws: true },
+      { num: 3, trice3Draws: true },
+    ],
+    55: [],
+    58: [
+      { num: 20, once20Draw: true },
+      { num: 20, once20Draw: true },
+      { num: 10, twice: true },
+      { num: 10, twice: true },
+      { num: 3, twice3Draws: true },
+      { num: 3, twice3Draws: true },
+      { num: 10, once10Draw: true },
+      { num: 10, once10Draw: true },
+      { num: 5, twice5Draws: true },
+      { num: 10, trice: true },
+      { num: 3, trice3Draws: true },
+      { num: 5, trice5Draws: true },
+    ],
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -527,8 +676,8 @@ const NumberGenerator = () => {
       <div>
         <div>
           <div>last result</div>
-          <div className=" flex">
-            {suggestCombo.map((s) => (
+          <div className="grid grid-cols-6">
+            {suggestCombo[maxNumber].map((s: any) => (
               <NumWrap {...s} />
             ))}
           </div>
@@ -603,7 +752,7 @@ const NumberGenerator = () => {
                   </div>
                   <button
                     className={`${
-                      lastResults.length <= 40 ? "hidden" : ""
+                      lastResults.length <= 20 ? "hidden" : ""
                     } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
                     onClick={() => handleRemove(res.chance)}
                   >
@@ -620,6 +769,7 @@ const NumberGenerator = () => {
                 <div className="grid grid-cols-6">
                   {res.numbers.map((num) => (
                     <div
+                      className="relative z-0"
                       onClick={() => {
                         console.log(num);
                         setClicked(num);
@@ -672,6 +822,17 @@ const NumberGenerator = () => {
                           res.chance
                         )}
                       />
+                      {count.map(
+                        (obj) =>
+                          obj.num === num && (
+                            <div
+                              className="flex
+        "
+                            >
+                              <NumWrap2 num={obj.count} once10Draw />
+                            </div>
+                          )
+                      )}
                     </div>
                   ))}
                   <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
