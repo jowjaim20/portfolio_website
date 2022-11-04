@@ -1,4 +1,9 @@
-import React, { useEffect, useState, useSyncExternalStore } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { isDataView } from "util/types";
 import axios from "axios";
 import { data } from "../data";
@@ -102,6 +107,7 @@ const NumWrap: React.FC<{
   once20Draw?: boolean;
   once10Draw?: boolean;
   picks?: number[];
+  handlesetColorCount?: React.Dispatch<React.SetStateAction<number[]>>;
 }> = ({
   picks,
   num,
@@ -119,9 +125,11 @@ const NumWrap: React.FC<{
   once20Draw = false,
   once10Draw = false,
   clicked = 0,
+  handlesetColorCount,
 }) => {
   const id: any = num.toString();
   const included = picks?.includes(num);
+
   return (
     <div
       className={`${
@@ -264,6 +272,12 @@ const NumberGenerator = () => {
   const [maxNumber, setMaxNumber] = useState<number>(58);
   const [changeInputChance, setChangeInputChance] = useState("");
   const [exclude, setExclude] = useState<number[]>([]);
+  const [colorCount, setColorCount] = useState<
+    {
+      number: string;
+      count: number;
+    }[]
+  >([]);
   const [count, setCount] = useState<Count[]>([]);
   const game = [42, 45, 49, 55, 58];
 
@@ -272,6 +286,7 @@ const NumberGenerator = () => {
     const number = Math.floor(Math.random() * mul) + 1;
     return number;
   };
+
   const handleExclude = (lastResults: Exclude[]) => {
     //const data = [{ numbers: [20, 21, 22, 23, 24], chance: 50 }];
     const forExcude = lastResults
@@ -349,6 +364,7 @@ const NumberGenerator = () => {
       identifyNotIncluded(data.data, all);
       setAll(all);
       setlastResults(data.data);
+      handlesetColorCount(data.data);
     };
     getData();
   }, [maxNumber]);
@@ -576,6 +592,7 @@ const NumberGenerator = () => {
 
     return count === 1;
   };
+  console.log(colorCount);
   const handleChangeChance = (
     lastResults: Exclude[],
     inputChance: number,
@@ -664,6 +681,90 @@ const NumberGenerator = () => {
     ],
   };
 
+  const handlesetColorCount = (lastResults: Exclude[]) => {
+    const count: string[] = [];
+    lastResults
+      .filter((a, b) => a.chance <= 48)
+      .forEach((result) => {
+        result.numbers.forEach((num) => {
+          const num1 = handleOnce20draw(num, lastResults, result.chance);
+
+          const num2 = handleOnce10draw(num, lastResults, result.chance);
+
+          const num3 = handleTrice3Draws(num, lastResults, result.chance);
+
+          const num4 = handleTwice3Draws(num, lastResults, result.chance);
+
+          const num5 = handleTrice5Draws(num, lastResults, result.chance);
+
+          const num6 = handleTwice5Draws(num, lastResults, result.chance);
+
+          const num7 = handleFivetimes(num, lastResults, result.chance);
+
+          const num8 = handleFourtimes(num, lastResults, result.chance);
+
+          const num9 = handleTrice(num, lastResults, result.chance);
+
+          const num10 = handleTwice(num, lastResults, result.chance);
+
+          const num11 = handleSingle(num, lastResults);
+
+          const color = num1
+            ? "white"
+            : num2
+            ? "green"
+            : num3
+            ? "pink"
+            : num4
+            ? "skyBlue"
+            : num5
+            ? "darkred"
+            : num6
+            ? "violet"
+            : num7
+            ? "black"
+            : num8
+            ? "gray"
+            : num9
+            ? "red"
+            : num10
+            ? "blue"
+            : num11
+            ? "uknown"
+            : "none";
+          console.log(color);
+          count.push(color);
+        });
+      });
+    const counter = (count: string[]) => {
+      const colorsCount = [
+        { number: "white", count: 0 },
+        { number: "green", count: 0 },
+        { number: "pink", count: 0 },
+        { number: "skyBlue", count: 0 },
+        { number: "darkRed", count: 0 },
+        { number: "violet", count: 0 },
+        { number: "black", count: 0 },
+        { number: "gray", count: 0 },
+        { number: "red", count: 0 },
+        { number: "blue", count: 0 },
+        { number: "unknown", count: 0 },
+        { number: "none", count: 0 },
+      ];
+
+      const data = colorsCount.map((d) => {
+        const length = count.filter((e) => e === d.number);
+        //console.log(length);
+        return { ...d, count: length.length };
+      });
+      setColorCount(data);
+    };
+    counter(count);
+    //console.log(count);
+  };
+
+  //console.log(colorCount);
+
   return (
     <div className="flex flex-col gap-2">
       <div className=" flex">
@@ -677,6 +778,16 @@ const NumberGenerator = () => {
             {num}
           </div>
         ))}
+      </div>
+      <div className=" grid grid-cols-3">
+        {colorCount
+          .sort((a, b) => b.count - a.count)
+          .map((color) => (
+            <div className="flex">
+              <NumWrap num={color.count} />
+              <span>{color.number}</span>
+            </div>
+          ))}
       </div>
       <div className="flex gap-1">
         <div className=" flex gap-2">
@@ -989,6 +1100,9 @@ const NumberGenerator = () => {
       </button>
       <button type="button" onClick={updateServer}>
         UpdateServer
+      </button>
+      <button type="button" onClick={() => handlesetColorCount(lastResults)}>
+        calculate
       </button>
     </div>
   );
