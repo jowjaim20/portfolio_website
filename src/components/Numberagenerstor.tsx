@@ -126,7 +126,7 @@ const NumWrap: React.FC<{
     <div
       className={`${
         included
-          ? "text-gray-900 border-4 border-red-900 text-[25px] font-extrabold"
+          ? "text-gray-900 border-4 border-orange-500 text-[25px] font-extrabold"
           : ""
       } ${
         clicked === num
