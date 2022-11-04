@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useSyncExternalStore } from "react";
 import { isDataView } from "util/types";
+import axios from "axios";
+import { data } from "../data";
 interface Exclude {
   numbers: number[];
   chance: number;
+  id?: number;
 }
 
 interface Count {
@@ -17,6 +20,7 @@ interface LastResult {
   week5?: Exclude;
   week6?: Exclude;
 }
+
 const numColor: any = {
   1: "text-lime-50",
   2: "text-gray-50",
@@ -79,6 +83,7 @@ const numColor: any = {
   59: "text-red-900",
   60: "text-stone-900",
 };
+
 const NumWrap: React.FC<{
   num: number;
   include?: boolean;
@@ -279,6 +284,15 @@ const NumberGenerator = () => {
     setExclude([...forExcude]);
     return forExcude;
   };
+  const updateServer = async () => {
+    const getData = async (id: number | undefined, obj: Exclude) => {
+      const data = await axios.put(
+        `http://localhost:3500/${maxNumber}/${id}`,
+        obj
+      );
+    };
+    lastResults.forEach((res) => getData(res.id, res));
+  };
   const handlePicks = (num: number) => {
     setPicks((data) => {
       const bool = data.includes(num);
@@ -321,17 +335,22 @@ const NumberGenerator = () => {
   };
 
   useEffect(() => {
-    const data = localStorage.getItem(maxNumber.toString());
-    const data2 = data !== null ? JSON.parse(data) : [];
+    // const data = localStorage.getItem(maxNumber.toString());
+    // const data2 = data !== null ? JSON.parse(data) : [];
     //console.log(data2);
-    const all = [];
-    for (let index = 0; index < maxNumber; index++) {
-      all.push(index + 1);
-    }
 
-    identifyNotIncluded(data2, all);
-    setAll(all);
-    setlastResults(data2);
+    const getData = async () => {
+      const data = await axios.get(`http://localhost:3500/${maxNumber}`);
+      const all = [];
+      for (let index = 0; index < maxNumber; index++) {
+        all.push(index + 1);
+      }
+
+      identifyNotIncluded(data.data, all);
+      setAll(all);
+      setlastResults(data.data);
+    };
+    getData();
   }, [maxNumber]);
 
   const handleReload = () => {
@@ -366,23 +385,35 @@ const NumberGenerator = () => {
     }
   };
   const handleAddLast = (lastResults: Exclude[], excludeObj: Exclude) => {
+    const data2 = new Date();
+    const updateServer = async (data: Exclude) => {
+      axios.post(`http://localhost:3500/${maxNumber}`, data);
+    };
     if (excludeObj.numbers.length === 6 && excludeObj.chance !== 0) {
-      const data = [...lastResults, excludeObj];
+      const data4 = { ...excludeObj, id: data2.getTime() };
+      const data = [...lastResults, data4];
       handleExclude(data);
       setlastResults(data);
-      localStorage.setItem(
-        maxNumber.toString(),
-        JSON.stringify([...lastResults, excludeObj])
-      );
+      updateServer(data4);
+      // localStorage.setItem(
+      //   maxNumber.toString(),
+      //   JSON.stringify([...lastResults, excludeObj])
+      // );
+
       setExcludeObj({ numbers: [], chance: 0 });
     }
   };
 
-  const handleRemove = (chance: number) => {
+  const handleRemove = (chance: number, id: number | undefined) => {
+    const data2 = new Date();
+    const updateServer = async () => {
+      axios.delete(`http://localhost:3500/${maxNumber}/${id}`);
+    };
+    updateServer();
+
     const data = lastResults.filter((res) => chance !== res.chance);
     console.log(data);
     setlastResults([...data]);
-    localStorage.setItem(maxNumber.toString(), JSON.stringify([...data]));
   };
 
   const included = (exclude: number[], num: number) => {
@@ -779,7 +810,7 @@ const NumberGenerator = () => {
                     </div>
                     <button
                       className={` bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                      onClick={() => handleRemove(res.chance)}
+                      onClick={() => handleRemove(res.chance, res.id)}
                     >
                       x
                     </button>
@@ -955,6 +986,9 @@ const NumberGenerator = () => {
       </button>
       <button type="button" onClick={() => setShowClose(!showClose)}>
         ShowClose
+      </button>
+      <button type="button" onClick={updateServer}>
+        UpdateServer
       </button>
     </div>
   );
