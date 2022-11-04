@@ -96,7 +96,9 @@ const NumWrap: React.FC<{
   clicked?: number;
   once20Draw?: boolean;
   once10Draw?: boolean;
+  picks?: number[];
 }> = ({
+  picks,
   num,
   include = true,
   includeAll = false,
@@ -114,9 +116,14 @@ const NumWrap: React.FC<{
   clicked = 0,
 }) => {
   const id: any = num.toString();
+  const included = picks?.includes(num);
   return (
     <div
       className={`${
+        included
+          ? "text-gray-900 border-4 border-red-900 text-[25px] font-extrabold"
+          : ""
+      } ${
         clicked === num
           ? " text-fuchsia-900 border-2 border-black text-[25px] font-extrabold"
           : " text-gray-700 "
@@ -173,7 +180,9 @@ const NumWrap2: React.FC<{
   clicked?: number;
   once20Draw?: boolean;
   once10Draw?: boolean;
+  picks?: number[];
 }> = ({
+  picks,
   num,
   include = true,
   includeAll = false,
@@ -237,7 +246,7 @@ const NumberGenerator = () => {
   const [all, setAll] = useState<number[]>([]);
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
   const [lastResultsPredict, setlastResultsPredict] = useState<Exclude[]>([]);
-
+  const [picks, setPicks] = useState<number[]>([]);
   const [excludeObj, setExcludeObj] = useState<Exclude>({
     numbers: [],
     chance: 0,
@@ -270,7 +279,17 @@ const NumberGenerator = () => {
     setExclude([...forExcude]);
     return forExcude;
   };
-
+  const handlePicks = (num: number) => {
+    setPicks((data) => {
+      const bool = data.includes(num);
+      if (!bool && data.length <= 5) {
+        return [...data, num];
+      } else {
+        const filtered = data.filter((number) => number !== num);
+        return [...filtered];
+      }
+    });
+  };
   const identifyNotIncluded = (lastResults: any, all: any) => {
     let data = [];
     const filtered = (index: number) => {
@@ -780,9 +799,11 @@ const NumberGenerator = () => {
                       onClick={() => {
                         console.log(num);
                         setClicked(num);
+                        handlePicks(num);
                       }}
                     >
                       <NumWrap
+                        picks={picks}
                         clicked={clicked}
                         num={num}
                         single={handleSingle(num, lastResultsPredict)}
