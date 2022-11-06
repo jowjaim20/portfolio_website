@@ -276,6 +276,7 @@ const NumberGenerator = () => {
     {
       number: string;
       count: number;
+      desc: string;
     }[]
   >([]);
   const [count, setCount] = useState<Count[]>([]);
@@ -718,7 +719,7 @@ const NumberGenerator = () => {
             : num4
             ? "skyBlue"
             : num5
-            ? "darkred"
+            ? "darkPink"
             : num6
             ? "violet"
             : num7
@@ -738,18 +739,16 @@ const NumberGenerator = () => {
       });
     const counter = (count: string[]) => {
       const colorsCount = [
-        { number: "white", count: 0 },
-        { number: "green", count: 0 },
-        { number: "pink", count: 0 },
-        { number: "skyBlue", count: 0 },
-        { number: "darkRed", count: 0 },
-        { number: "violet", count: 0 },
-        { number: "black", count: 0 },
-        { number: "gray", count: 0 },
-        { number: "red", count: 0 },
-        { number: "blue", count: 0 },
-        { number: "unknown", count: 0 },
-        { number: "none", count: 0 },
+        { number: "white", count: 0, desc: "1/20" },
+        { number: "green", count: 0, desc: "1/10" },
+        { number: "pink", count: 0, desc: "3/3" },
+        { number: "skyBlue", count: 0, desc: "2/3" },
+        { number: "darkPink", count: 0, desc: "3/5" },
+        { number: "violet", count: 0, desc: "2/5" },
+        { number: "black", count: 0, desc: "5/10" },
+        { number: "gray", count: 0, desc: "4/10" },
+        { number: "red", count: 0, desc: "3/10" },
+        { number: "blue", count: 0, desc: "2/10" },
       ];
 
       const data = colorsCount.map((d) => {
@@ -767,7 +766,7 @@ const NumberGenerator = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className=" flex">
+      <div className=" flex ">
         {game.map((num) => (
           <div
             className={`flex justify-center items-center text-lg font-bold rounded-full ${
@@ -779,17 +778,228 @@ const NumberGenerator = () => {
           </div>
         ))}
       </div>
-      <div className=" grid grid-cols-3">
-        {colorCount
-          .sort((a, b) => b.count - a.count)
-          .map((color) => (
-            <div className="flex">
-              <NumWrap num={color.count} />
-              <span>{color.number}</span>
+      <div className="flex gap-10">
+        <div className=" grid grid-cols-3">
+          {colorCount
+            .sort((a, b) => b.count - a.count)
+            .map((color) => (
+              <div className="flex">
+                <NumWrap
+                  num={color.count}
+                  twice={color.number === "blue"}
+                  trice={color.number === "red"}
+                  twice5Draws={color.number === "violet"}
+                  trice5Draws={color.number === "darkPink"}
+                  twice3Draws={color.number === "skyBlue"}
+                  trice3Draws={color.number === "pink"}
+                  fourTimes={color.number === "gray"}
+                  fiveTimes={color.number === "black"}
+                  once20Draw={color.number === "white"}
+                  once10Draw={color.number === "green"}
+                />
+                <span>{color.number}</span>
+                <span className=" ml-2">{color.desc}</span>
+              </div>
+            ))}
+        </div>
+        <div className=" flex flex-col md:flex-row gap-20">
+          <div className=" flex flex-col">
+            <div className=" font-extrabold">LAST RESULTS</div>
+            <div className=" h-[400px] overflow-y-scroll w-fit">
+              {lastResults
+                .sort((a, b) => a.chance - b.chance)
+                .filter((res) => res.numbers.length === 6)
+                .map((res) => (
+                  <div className={`flex ${res.chance > 60 ? "bg-black" : ""}`}>
+                    {res.numbers.map((num) => (
+                      <div
+                        onClick={() => {
+                          console.log(num);
+                          setClicked(num);
+                        }}
+                      >
+                        <NumWrap
+                          clicked={clicked}
+                          num={num}
+                          single={handleSingle(num, lastResults)}
+                          twice={handleTwice(num, lastResults, res.chance)}
+                          trice={handleTrice(num, lastResults, res.chance)}
+                          twice5Draws={handleTwice5Draws(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          trice5Draws={handleTrice5Draws(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          twice3Draws={handleTwice3Draws(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          trice3Draws={handleTrice3Draws(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          fourTimes={handleFourtimes(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          fiveTimes={handleFivetimes(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          once20Draw={handleOnce20draw(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                          once10Draw={handleOnce10draw(
+                            num,
+                            lastResults,
+                            res.chance
+                          )}
+                        />
+                      </div>
+                    ))}
+                    <div
+                      className={`${
+                        showClose ? "" : "hidden"
+                      } bg-red-600 flex justify-center items-center rounded-full text-white w-fit`}
+                    >
+                      <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                        {res.chance}
+                      </div>
+                      <button
+                        className={` bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                        onClick={() => handleRemove(res.chance, res.id)}
+                      >
+                        x
+                      </button>
+                    </div>
+                  </div>
+                ))}
             </div>
-          ))}
+          </div>
+          <div className=" flex flex-col">
+            <div className="  font-extrabold">Next Draw Colors</div>
+            <div className=" h-[400px] overflow-y-scroll w-fit">
+              {lastResultsPredict
+                .sort((a, b) => a.chance - b.chance)
+                .filter((res) => res.numbers.length > 6)
+                .map((res) => (
+                  <div className="grid grid-cols-6">
+                    {res.numbers.map((num) => (
+                      <div
+                        className="relative z-0"
+                        onClick={() => {
+                          console.log(num);
+                          setClicked(num);
+                          handlePicks(num);
+                        }}
+                      >
+                        <NumWrap
+                          picks={picks}
+                          clicked={clicked}
+                          num={num}
+                          single={handleSingle(num, lastResultsPredict)}
+                          twice={handleTwice(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          trice={handleTrice(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          twice5Draws={handleTwice5Draws(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          trice5Draws={handleTrice5Draws(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          twice3Draws={handleTwice3Draws(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          trice3Draws={handleTrice3Draws(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          fourTimes={handleFourtimes(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          fiveTimes={handleFivetimes(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          once20Draw={handleOnce20draw(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                          once10Draw={handleOnce10draw(
+                            num,
+                            lastResultsPredict,
+                            res.chance
+                          )}
+                        />
+                        {count.map(
+                          (obj) =>
+                            obj.num === num && (
+                              <div
+                                className="flex
+        "
+                              >
+                                <NumWrap2 num={obj.count} once10Draw />
+                              </div>
+                            )
+                        )}
+                      </div>
+                    ))}
+                    <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                      {res.chance}
+                    </div>
+                    <button
+                      className={`${
+                        lastResultsPredict.length <= 30 ? "hidden" : ""
+                      } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                      onClick={() => setlastResultsPredict([])}
+                    >
+                      x
+                    </button>
+                  </div>
+                ))}
+              <button
+                onClick={() => {
+                  setlastResultsPredict([
+                    ...lastResults,
+                    { numbers: all, chance: 28 },
+                  ]);
+                }}
+              >
+                showAll
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="flex gap-1">
+      {/* <div className="flex gap-1">
         <div className=" flex gap-2">
           <div className="flex gap-1">
             {lottoNumbers.map((num) => (
@@ -827,8 +1037,8 @@ const NumberGenerator = () => {
             ADD
           </button>
         </div>
-      </div>
-      <div className=" flex justify-center items-center">
+      </div> */}
+      {/* <div className=" flex justify-center items-center">
         <button
           className=" rounded-md bg-lime-700 px-3 py-1 text-white font-medium"
           onClick={handleReload}
@@ -836,200 +1046,18 @@ const NumberGenerator = () => {
         >
           Again
         </button>
-      </div>
+      </div> */}
       <div>
         <div>
-          <div>last result</div>
-          <div className="grid grid-cols-6">
+          {/* <div>last result</div> */}
+          {/* <div className="grid grid-cols-6">
             {suggestCombo[maxNumber].map((s: any) => (
               <NumWrap {...s} />
             ))}
-          </div>
-          <span>{lastResults.length}</span>
+          </div> */}
+          {/* <span>{lastResults.length}</span> */}
         </div>
         <hr />
-        <div className=" flex flex-col md:flex-row gap-2">
-          <div className=" h-[400px] overflow-y-scroll w-fit">
-            {lastResults
-              .sort((a, b) => a.chance - b.chance)
-              .filter((res) => res.numbers.length === 6)
-              .map((res) => (
-                <div className={`flex ${res.chance > 60 ? "bg-black" : ""}`}>
-                  {res.numbers.map((num) => (
-                    <div
-                      onClick={() => {
-                        console.log(num);
-                        setClicked(num);
-                      }}
-                    >
-                      <NumWrap
-                        clicked={clicked}
-                        num={num}
-                        single={handleSingle(num, lastResults)}
-                        twice={handleTwice(num, lastResults, res.chance)}
-                        trice={handleTrice(num, lastResults, res.chance)}
-                        twice5Draws={handleTwice5Draws(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        trice5Draws={handleTrice5Draws(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        twice3Draws={handleTwice3Draws(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        trice3Draws={handleTrice3Draws(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        fourTimes={handleFourtimes(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        fiveTimes={handleFivetimes(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        once20Draw={handleOnce20draw(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                        once10Draw={handleOnce10draw(
-                          num,
-                          lastResults,
-                          res.chance
-                        )}
-                      />
-                    </div>
-                  ))}
-                  <div
-                    className={`${
-                      showClose ? "" : "hidden"
-                    } bg-red-600 flex justify-center items-center rounded-full text-white w-fit`}
-                  >
-                    <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
-                      {res.chance}
-                    </div>
-                    <button
-                      className={` bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                      onClick={() => handleRemove(res.chance, res.id)}
-                    >
-                      x
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-          <div className=" h-[400px] overflow-y-scroll w-fit">
-            {lastResultsPredict
-              .sort((a, b) => a.chance - b.chance)
-              .filter((res) => res.numbers.length > 6)
-              .map((res) => (
-                <div className="grid grid-cols-6">
-                  {res.numbers.map((num) => (
-                    <div
-                      className="relative z-0"
-                      onClick={() => {
-                        console.log(num);
-                        setClicked(num);
-                        handlePicks(num);
-                      }}
-                    >
-                      <NumWrap
-                        picks={picks}
-                        clicked={clicked}
-                        num={num}
-                        single={handleSingle(num, lastResultsPredict)}
-                        twice={handleTwice(num, lastResultsPredict, res.chance)}
-                        trice={handleTrice(num, lastResultsPredict, res.chance)}
-                        twice5Draws={handleTwice5Draws(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        trice5Draws={handleTrice5Draws(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        twice3Draws={handleTwice3Draws(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        trice3Draws={handleTrice3Draws(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        fourTimes={handleFourtimes(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        fiveTimes={handleFivetimes(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        once20Draw={handleOnce20draw(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                        once10Draw={handleOnce10draw(
-                          num,
-                          lastResultsPredict,
-                          res.chance
-                        )}
-                      />
-                      {count.map(
-                        (obj) =>
-                          obj.num === num && (
-                            <div
-                              className="flex
-        "
-                            >
-                              <NumWrap2 num={obj.count} once10Draw />
-                            </div>
-                          )
-                      )}
-                    </div>
-                  ))}
-                  <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
-                    {res.chance}
-                  </div>
-                  <button
-                    className={`${
-                      lastResultsPredict.length <= 30 ? "hidden" : ""
-                    } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                    onClick={() => setlastResultsPredict([])}
-                  >
-                    x
-                  </button>
-                </div>
-              ))}
-            <button
-              onClick={() => {
-                setlastResultsPredict([
-                  ...lastResults,
-                  { numbers: all, chance: 28 },
-                ]);
-              }}
-            >
-              showAll
-            </button>
-          </div>
-        </div>
       </div>
       <div>exclude</div>
       {

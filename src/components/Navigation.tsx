@@ -3,8 +3,8 @@ import { FaBeer, FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa";
 
 const Navigation = () => {
   return (
-    <div className=" bg-blue-300 flex">
-      <div className=" text-lg font-bold text-white">Logo</div>
+    <div className=" bg-green-900 flex mb-12">
+      {/* <div className=" text-lg font-bold text-white">Logo</div>
       <div className="flex gap-1">
         <span className=" p-2 text-sm bg-lime-300 rounded-md flex justify-center items-center">
           Home
@@ -21,7 +21,8 @@ const Navigation = () => {
         <FaLinkedin />
         <FaInstagram />
       </div>
-      <div>Let's Connect</div>
+      <div>Let's Connect</div> */}
+      <div className=" font-extrabold text-[60px] text-white">LottoHenyo</div>
     </div>
   );
 };
