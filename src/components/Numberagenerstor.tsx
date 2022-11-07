@@ -4,9 +4,8 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
-import { isDataView } from "util/types";
 import axios from "axios";
-import { data } from "../data";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 interface Exclude {
   numbers: number[];
   chance: number;
@@ -17,77 +16,6 @@ interface Count {
   num: number;
   count: number;
 }
-interface LastResult {
-  week1: Exclude;
-  week2?: Exclude;
-  week3?: Exclude;
-  week4?: Exclude;
-  week5?: Exclude;
-  week6?: Exclude;
-}
-
-const numColor: any = {
-  1: "text-lime-50",
-  2: "text-gray-50",
-  3: "text-blue-50",
-  4: "text-amber-50",
-  5: "text-rose-50",
-  6: "text-fuchsia-50",
-  7: "text-indigo-50",
-  8: "text-teal-50",
-  9: "text-red-50",
-  10: "text-cyan-50",
-  11: "text-lime-200",
-  12: "text-gray-200",
-  13: "text-blue-200",
-  14: "text-amber-200",
-  15: "text-rose-200",
-  16: "text-fuchsia-200",
-  17: "text-indigo-200",
-  18: "text-teal-200",
-  19: "text-red-200",
-  20: "text-cyan-200",
-  21: "text-lime-500",
-  22: "text-gray-500",
-  23: "text-blue-500",
-  24: "text-amber-500",
-  25: "text-rose-500",
-  26: "text-fuchsia-500",
-  27: "text-indigo-500",
-  28: "text-teal-500",
-  29: "text-red-500",
-  30: "text-cyan-500",
-  31: "text-lime-600",
-  32: "text-gray-600",
-  33: "text-blue-600",
-  34: "text-amber-600",
-  35: "text-rose-600",
-  36: "text-fuchsia-600",
-  37: "text-indigo-600",
-  38: "text-teal-600",
-  39: "text-red-600",
-  40: "text-cyan-600",
-  41: "text-lime-700",
-  42: "text-gray-700",
-  43: "text-blue-700",
-  44: "text-amber-700",
-  45: "text-rose-700",
-  46: "text-fuchsia-700",
-  47: "text-indigo-700",
-  48: "text-teal-700",
-  49: "text-red-700",
-  50: "text-cyan-700",
-  51: "text-lime-900",
-  52: "text-gray-900",
-  53: "text-blue-900",
-  54: "text-amber-900",
-  55: "text-rose-900",
-  56: "text-fuchsia-900",
-  57: "text-indigo-900",
-  58: "text-teal-900",
-  59: "text-red-900",
-  60: "text-stone-900",
-};
 
 const NumWrap: React.FC<{
   num: number;
@@ -212,7 +140,6 @@ const NumWrap2: React.FC<{
   once10Draw = false,
   clicked = 0,
 }) => {
-  const id: any = num.toString();
   return (
     <div
       className={` absolute z-30 -top-1 -right-1${
@@ -268,7 +195,6 @@ const NumberGenerator = () => {
   const [clicked, setClicked] = useState(0);
   const [input, setInput] = useState("");
   const [inputChance, setInputChance] = useState("");
-  const [lottoNumbers, setLottoNumbers] = useState<number[]>([]);
   const [maxNumber, setMaxNumber] = useState<number>(58);
   const [changeInputChance, setChangeInputChance] = useState("");
   const [exclude, setExclude] = useState<number[]>([]);
@@ -289,13 +215,9 @@ const NumberGenerator = () => {
   };
 
   const handleExclude = (lastResults: Exclude[]) => {
-    //const data = [{ numbers: [20, 21, 22, 23, 24], chance: 50 }];
     const forExcude = lastResults
       .map((data) => data.numbers.filter((num) => data.chance >= generate(100)))
       .flat();
-    // setlastResults(data);
-    //console.log(forExcude);
-    // const all = [];
 
     setExclude([...forExcude]);
     return forExcude;
@@ -351,10 +273,6 @@ const NumberGenerator = () => {
   };
 
   useEffect(() => {
-    // const data = localStorage.getItem(maxNumber.toString());
-    // const data2 = data !== null ? JSON.parse(data) : [];
-    //console.log(data2);
-
     const getData = async () => {
       const data = await axios.get(`http://localhost:3500/${maxNumber}`);
       const all = [];
@@ -367,40 +285,10 @@ const NumberGenerator = () => {
       setlastResults(data.data);
       handlesetColorCount(data.data);
     };
+
     getData();
   }, [maxNumber]);
 
-  const handleReload = () => {
-    const excludes = handleExclude(lastResults);
-    const winningNum: number[] = [];
-    //console.log(exclude);
-    for (let i = 0; winningNum.length !== 6; i++) {
-      const all = winningNum.concat(excludes);
-      console.log(all);
-      const random = generate();
-      if (all.includes(random) && !winningNum.includes(random)) {
-        winningNum.push(random);
-      } else {
-        const num = generate(100);
-        if (num <= 1 && !winningNum.includes(random)) {
-          winningNum.push(random);
-        }
-      }
-    }
-    setExclude(excludes);
-    setLottoNumbers(winningNum);
-  };
-
-  const handleAddExclude = () => {
-    if (excludeObj.numbers.length !== 6) {
-      setExcludeObj({
-        ...excludeObj,
-        numbers: [...excludeObj.numbers, parseInt(input)],
-        chance: +inputChance,
-      });
-      setInput("");
-    }
-  };
   const handleAddLast = (lastResults: Exclude[], excludeObj: Exclude) => {
     const data2 = new Date();
     const updateServer = async (data: Exclude) => {
@@ -412,17 +300,12 @@ const NumberGenerator = () => {
       handleExclude(data);
       setlastResults(data);
       updateServer(data4);
-      // localStorage.setItem(
-      //   maxNumber.toString(),
-      //   JSON.stringify([...lastResults, excludeObj])
-      // );
 
       setExcludeObj({ numbers: [], chance: 0 });
     }
   };
 
   const handleRemove = (chance: number, id: number | undefined) => {
-    const data2 = new Date();
     const updateServer = async () => {
       axios.delete(`http://localhost:3500/${maxNumber}/${id}`);
     };
@@ -431,16 +314,6 @@ const NumberGenerator = () => {
     const data = lastResults.filter((res) => chance !== res.chance);
     console.log(data);
     setlastResults([...data]);
-  };
-
-  const included = (exclude: number[], num: number) => {
-    return exclude.includes(num);
-  };
-  const includedAll = (lastResults: Exclude[], num: number) => {
-    const forExcude = lastResults
-      .map((data) => data.numbers.map((num) => num))
-      .flat();
-    return !forExcude.includes(num);
   };
 
   const handleSingle = (nums: number, lastResults: Exclude[]) => {
@@ -535,7 +408,6 @@ const NumberGenerator = () => {
 
     return count === 3;
   };
-
   const handleFourtimes = (
     nums: number,
     lastResults: Exclude[],
@@ -593,7 +465,7 @@ const NumberGenerator = () => {
 
     return count === 1;
   };
-  console.log(colorCount);
+  // console.log(colorCount);
   const handleChangeChance = (
     lastResults: Exclude[],
     inputChance: number,
@@ -633,54 +505,6 @@ const NumberGenerator = () => {
   // once20Draw = false,
   // once10Draw = false,
   // clicked = 0,
-  const suggestCombo: any = {
-    42: [
-      { num: 10, twice: true },
-      { num: 10, twice: true },
-      { num: 3, twice3Draws: true },
-      { num: 3, twice3Draws: true },
-      { num: 5, twice5Draws: true },
-      { num: 5, twice5Draws: true },
-      { num: 10, once10Draw: true },
-      { num: 10, once10Draw: true },
-      { num: 10, trice: true },
-      { num: 20, once20Draw: true },
-      { num: 5, trice5Draws: true },
-      { num: 3, trice3Draws: true },
-    ],
-    45: [],
-    49: [
-      { num: 10, twice: true },
-      { num: 10, twice: true },
-      { num: 20, once20Draw: true },
-      { num: 20, once20Draw: true },
-
-      { num: 5, twice5Draws: true },
-      { num: 5, twice5Draws: true },
-      { num: 3, twice3Draws: true },
-      { num: 3, twice3Draws: true },
-
-      { num: 10, once10Draw: true },
-      { num: 10, trice: true },
-      { num: 5, trice5Draws: true },
-      { num: 3, trice3Draws: true },
-    ],
-    55: [],
-    58: [
-      { num: 20, once20Draw: true },
-      { num: 20, once20Draw: true },
-      { num: 10, twice: true },
-      { num: 10, twice: true },
-      { num: 3, twice3Draws: true },
-      { num: 3, twice3Draws: true },
-      { num: 10, once10Draw: true },
-      { num: 10, once10Draw: true },
-      { num: 5, twice5Draws: true },
-      { num: 10, trice: true },
-      { num: 3, trice3Draws: true },
-      { num: 5, trice5Draws: true },
-    ],
-  };
 
   const handlesetColorCount = (lastResults: Exclude[]) => {
     const count: string[] = [];
@@ -759,10 +583,7 @@ const NumberGenerator = () => {
       setColorCount(data);
     };
     counter(count);
-    //console.log(count);
   };
-
-  //console.log(colorCount);
 
   return (
     <div className="flex flex-col gap-2">
@@ -778,31 +599,31 @@ const NumberGenerator = () => {
           </div>
         ))}
       </div>
+      <div className=" grid grid-cols-3">
+        {colorCount
+          .sort((a, b) => b.count - a.count)
+          .map((color) => (
+            <div className="flex">
+              <NumWrap
+                num={color.count}
+                twice={color.number === "blue"}
+                trice={color.number === "red"}
+                twice5Draws={color.number === "violet"}
+                trice5Draws={color.number === "darkPink"}
+                twice3Draws={color.number === "skyBlue"}
+                trice3Draws={color.number === "pink"}
+                fourTimes={color.number === "gray"}
+                fiveTimes={color.number === "black"}
+                once20Draw={color.number === "white"}
+                once10Draw={color.number === "green"}
+              />
+              <span>{color.number}</span>
+              <span className=" ml-2">{color.desc}</span>
+            </div>
+          ))}
+      </div>
       <div className="flex gap-10">
-        <div className=" grid grid-cols-3">
-          {colorCount
-            .sort((a, b) => b.count - a.count)
-            .map((color) => (
-              <div className="flex">
-                <NumWrap
-                  num={color.count}
-                  twice={color.number === "blue"}
-                  trice={color.number === "red"}
-                  twice5Draws={color.number === "violet"}
-                  trice5Draws={color.number === "darkPink"}
-                  twice3Draws={color.number === "skyBlue"}
-                  trice3Draws={color.number === "pink"}
-                  fourTimes={color.number === "gray"}
-                  fiveTimes={color.number === "black"}
-                  once20Draw={color.number === "white"}
-                  once10Draw={color.number === "green"}
-                />
-                <span>{color.number}</span>
-                <span className=" ml-2">{color.desc}</span>
-              </div>
-            ))}
-        </div>
-        <div className=" flex flex-col md:flex-row gap-20">
+        <div className=" flex flex-col sm:flex-row gap-20">
           <div className=" flex flex-col">
             <div className=" font-extrabold">LAST RESULTS</div>
             <div className=" h-[400px] overflow-y-scroll w-fit">
@@ -905,7 +726,6 @@ const NumberGenerator = () => {
                       >
                         <NumWrap
                           picks={picks}
-                          clicked={clicked}
                           num={num}
                           single={handleSingle(num, lastResultsPredict)}
                           twice={handleTwice(
@@ -999,7 +819,175 @@ const NumberGenerator = () => {
           </div>
         </div>
       </div>
-      {/* <div className="flex gap-1">
+      <div>
+        <hr />
+      </div>
+      <div>exclude</div>
+      {
+        <div className="flex">
+          {excludeObj.numbers.map((num) => (
+            <NumWrap num={num} />
+          ))}
+          <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+            {excludeObj.chance}
+          </div>
+        </div>
+      }
+      <div className={` ${showClose ? "" : "hidden"}`}>
+        <input
+          className=" bg-lime-100 max-w-lg"
+          min={0}
+          type="number"
+          value={inputChance}
+          onChange={(e) => setInputChance(e.target.value)}
+        />
+        <input
+          className=" bg-lime-100 max-w-lg"
+          min={0}
+          type="number"
+          value={changeInputChance}
+          onChange={(e) => setChangeInputChance(e.target.value)}
+        />
+        <button
+          className=" bg-lime-100 px-5 ml-1 max-w-lg"
+          type="button"
+          onClick={() =>
+            handleChangeChance(lastResults, +inputChance, +changeInputChance)
+          }
+        >
+          Change
+        </button>
+        <div>
+          <div
+            className=" px-4 py-2"
+            onClick={() => handleChancesUporDown(lastResults, 2)}
+          >
+            <FaChevronUp />
+          </div>
+          <div
+            className=" px-4 py-2"
+            onClick={() => handleChancesUporDown(lastResults, -2)}
+          >
+            <FaChevronDown />
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={() =>
+          handleAddLast(lastResults, {
+            numbers: picks,
+            chance: 28,
+            id: new Date().getTime(),
+          })
+        }
+      >
+        add NextColors
+      </button>
+      <button type="button" onClick={() => setShowClose(!showClose)}>
+        ShowClose
+      </button>
+      <button type="button" onClick={updateServer}>
+        UpdateServer
+      </button>
+      <button type="button" onClick={() => handlesetColorCount(lastResults)}>
+        calculate
+      </button>
+    </div>
+  );
+};
+
+export default NumberGenerator;
+
+// const numColor: any = {
+//   1: "text-lime-50",
+//   2: "text-gray-50",
+//   3: "text-blue-50",
+//   4: "text-amber-50",
+//   5: "text-rose-50",
+//   6: "text-fuchsia-50",
+//   7: "text-indigo-50",
+//   8: "text-teal-50",
+//   9: "text-red-50",
+//   10: "text-cyan-50",
+//   11: "text-lime-200",
+//   12: "text-gray-200",
+//   13: "text-blue-200",
+//   14: "text-amber-200",
+//   15: "text-rose-200",
+//   16: "text-fuchsia-200",
+//   17: "text-indigo-200",
+//   18: "text-teal-200",
+//   19: "text-red-200",
+//   20: "text-cyan-200",
+//   21: "text-lime-500",
+//   22: "text-gray-500",
+//   23: "text-blue-500",
+//   24: "text-amber-500",
+//   25: "text-rose-500",
+//   26: "text-fuchsia-500",
+//   27: "text-indigo-500",
+//   28: "text-teal-500",
+//   29: "text-red-500",
+//   30: "text-cyan-500",
+//   31: "text-lime-600",
+//   32: "text-gray-600",
+//   33: "text-blue-600",
+//   34: "text-amber-600",
+//   35: "text-rose-600",
+//   36: "text-fuchsia-600",
+//   37: "text-indigo-600",
+//   38: "text-teal-600",
+//   39: "text-red-600",
+//   40: "text-cyan-600",
+//   41: "text-lime-700",
+//   42: "text-gray-700",
+//   43: "text-blue-700",
+//   44: "text-amber-700",
+//   45: "text-rose-700",
+//   46: "text-fuchsia-700",
+//   47: "text-indigo-700",
+//   48: "text-teal-700",
+//   49: "text-red-700",
+//   50: "text-cyan-700",
+//   51: "text-lime-900",
+//   52: "text-gray-900",
+//   53: "text-blue-900",
+//   54: "text-amber-900",
+//   55: "text-rose-900",
+//   56: "text-fuchsia-900",
+//   57: "text-indigo-900",
+//   58: "text-teal-900",
+//   59: "text-red-900",
+//   60: "text-stone-900",
+// };
+
+{
+  /* <div>last result</div> */
+}
+{
+  /* <div className="grid grid-cols-6">
+  {suggestCombo[maxNumber].map((s: any) => (
+    <NumWrap {...s} />
+  ))}
+</div> */
+}
+{
+  /* <span>{lastResults.length}</span> */
+}
+
+{
+  /* <button
+        type="button"
+        onClick={() => handleAddLast(lastResults, excludeObj)}
+      >
+        add lastresult
+      </button> */
+}
+
+{
+  /* <div className="flex gap-1">
         <div className=" flex gap-2">
           <div className="flex gap-1">
             {lottoNumbers.map((num) => (
@@ -1037,8 +1025,10 @@ const NumberGenerator = () => {
             ADD
           </button>
         </div>
-      </div> */}
-      {/* <div className=" flex justify-center items-center">
+      </div> */
+}
+{
+  /* <div className=" flex justify-center items-center">
         <button
           className=" rounded-md bg-lime-700 px-3 py-1 text-white font-medium"
           onClick={handleReload}
@@ -1046,31 +1036,59 @@ const NumberGenerator = () => {
         >
           Again
         </button>
-      </div> */}
-      <div>
-        <div>
-          {/* <div>last result</div> */}
-          {/* <div className="grid grid-cols-6">
-            {suggestCombo[maxNumber].map((s: any) => (
-              <NumWrap {...s} />
-            ))}
-          </div> */}
-          {/* <span>{lastResults.length}</span> */}
-        </div>
-        <hr />
-      </div>
-      <div>exclude</div>
-      {
-        <div className="flex">
-          {excludeObj.numbers.map((num) => (
-            <NumWrap num={num} />
-          ))}
-          <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
-            {excludeObj.chance}
-          </div>
-        </div>
-      }
-      <div className="flex">
+      </div> */
+}
+const suggestCombo: any = {
+  42: [
+    { num: 10, twice: true },
+    { num: 10, twice: true },
+    { num: 3, twice3Draws: true },
+    { num: 3, twice3Draws: true },
+    { num: 5, twice5Draws: true },
+    { num: 5, twice5Draws: true },
+    { num: 10, once10Draw: true },
+    { num: 10, once10Draw: true },
+    { num: 10, trice: true },
+    { num: 20, once20Draw: true },
+    { num: 5, trice5Draws: true },
+    { num: 3, trice3Draws: true },
+  ],
+  45: [],
+  49: [
+    { num: 10, twice: true },
+    { num: 10, twice: true },
+    { num: 20, once20Draw: true },
+    { num: 20, once20Draw: true },
+
+    { num: 5, twice5Draws: true },
+    { num: 5, twice5Draws: true },
+    { num: 3, twice3Draws: true },
+    { num: 3, twice3Draws: true },
+
+    { num: 10, once10Draw: true },
+    { num: 10, trice: true },
+    { num: 5, trice5Draws: true },
+    { num: 3, trice3Draws: true },
+  ],
+  55: [],
+  58: [
+    { num: 20, once20Draw: true },
+    { num: 20, once20Draw: true },
+    { num: 10, twice: true },
+    { num: 10, twice: true },
+    { num: 3, twice3Draws: true },
+    { num: 3, twice3Draws: true },
+    { num: 10, once10Draw: true },
+    { num: 10, once10Draw: true },
+    { num: 5, twice5Draws: true },
+    { num: 10, trice: true },
+    { num: 3, trice3Draws: true },
+    { num: 5, trice5Draws: true },
+  ],
+};
+
+{
+  /* <div className="flex">
         <input
           className=" bg-lime-100 max-w-lg"
           min={0}
@@ -1086,54 +1104,26 @@ const NumberGenerator = () => {
         >
           add
         </button>
-      </div>
-      <div>
-        <input
-          className=" bg-lime-100 max-w-lg"
-          min={0}
-          type="number"
-          value={inputChance}
-          onChange={(e) => setInputChance(e.target.value)}
-        />
-        <input
-          className=" bg-lime-100 max-w-lg"
-          min={0}
-          type="number"
-          value={changeInputChance}
-          onChange={(e) => setChangeInputChance(e.target.value)}
-        />
-        <button
-          className=" bg-lime-100 px-5 ml-1 max-w-lg"
-          type="button"
-          onClick={() =>
-            handleChangeChance(lastResults, +inputChance, +changeInputChance)
-          }
-        >
-          Change
-        </button>
-        <div>
-          <div onClick={() => handleChancesUporDown(lastResults, 2)}>Up</div>
-          <div onClick={() => handleChancesUporDown(lastResults, -2)}>Down</div>
-        </div>
-      </div>
-      qq
-      <button
-        type="button"
-        onClick={() => handleAddLast(lastResults, excludeObj)}
-      >
-        add lastresult
-      </button>
-      <button type="button" onClick={() => setShowClose(!showClose)}>
-        ShowClose
-      </button>
-      <button type="button" onClick={updateServer}>
-        UpdateServer
-      </button>
-      <button type="button" onClick={() => handlesetColorCount(lastResults)}>
-        calculate
-      </button>
-    </div>
-  );
-};
+      </div> */
+}
 
-export default NumberGenerator;
+//const handleReload = () => {
+//   const excludes = handleExclude(lastResults);
+//   const winningNum: number[] = [];
+//   //console.log(exclude);
+//   for (let i = 0; winningNum.length !== 6; i++) {
+//     const all = winningNum.concat(excludes);
+//     console.log(all);
+//     const random = generate();
+//     if (all.includes(random) && !winningNum.includes(random)) {
+//       winningNum.push(random);
+//     } else {
+//       const num = generate(100);
+//       if (num <= 1 && !winningNum.includes(random)) {
+//         winningNum.push(random);
+//       }
+//     }
+//   }
+//   setExclude(excludes);
+//   setLottoNumbers(winningNum);
+// };
