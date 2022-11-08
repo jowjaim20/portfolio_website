@@ -1,28 +1,35 @@
 import React from "react";
-import { FaBeer, FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa";
+import {
+  FaBeer,
+  FaFacebook,
+  FaLinkedin,
+  FaInstagram,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
-const Navigation = () => {
+const Navigation: React.FC<any> = ({ handleChangeGame }) => {
   return (
-    <div className=" bg-green-900 flex mb-12">
-      {/* <div className=" text-lg font-bold text-white">Logo</div>
-      <div className="flex gap-1">
-        <span className=" p-2 text-sm bg-lime-300 rounded-md flex justify-center items-center">
-          Home
-        </span>
-        <span className=" p-2 text-sm bg-lime-300 rounded-md flex justify-center items-center">
-          Skills
-        </span>
-        <span className=" p-2 text-sm bg-lime-300 rounded-md flex justify-center items-center">
-          NumberGenerator
-        </span>
+    <div className=" bg-[#0D1816] flex flex-col h-full mb-12 w-40 items-center">
+      <div className=" h-[100px] w-[100px] rounded-full bg-[#0D3805] flex justify-center items-center">
+        <div className=" font-extrabold text-[25px] flex flex-col leading-none text-white">
+          <span>Lotto</span>
+          <span>Henyo</span>
+        </div>
+        <div className=" w-10 h-10" onClick={() => handleChangeGame(-1)}>
+          <FaChevronLeft />
+        </div>
+        <div className=" w-10 h-10" onClick={() => handleChangeGame(1)}>
+          <FaChevronRight />
+        </div>
       </div>
+
       <div className=" flex">
         <FaFacebook />
         <FaLinkedin />
         <FaInstagram />
       </div>
-      <div>Let's Connect</div> */}
-      <div className=" font-extrabold text-[60px] text-white">LottoHenyo</div>
+      <div>Let's Connect</div>
     </div>
   );
 };
