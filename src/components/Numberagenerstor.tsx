@@ -790,8 +790,11 @@ const NumberGenerator = () => {
                   ))}
                 <button
                   onClick={() => {
+                    const lastResults2 = lastResults.filter(
+                      (result) => result.chance > 28
+                    );
                     setlastResultsPredict([
-                      ...lastResults,
+                      ...lastResults2,
                       { numbers: all, chance: 28 },
                     ]);
                   }}
