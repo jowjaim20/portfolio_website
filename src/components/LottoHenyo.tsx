@@ -290,9 +290,9 @@ const LottoHenyo = () => {
       setlastResults(data.data);
       handlesetColorCount(data.data);
       const lastResults2 = data.data.filter(
-        (result: Exclude) => result.chance > 28
+        (result: Exclude) => result.chance > 2
       );
-      setlastResultsPredict([...lastResults2, { numbers: all, chance: 28 }]);
+      setlastResultsPredict([...lastResults2, { numbers: all, chance: 2 }]);
     };
 
     getData();
@@ -300,10 +300,11 @@ const LottoHenyo = () => {
 
   const handleAddLast = (lastResults: Exclude[], excludeObj: Exclude) => {
     const data2 = new Date();
+    const isLast4 = lastResults[0].chance === 4;
     const updateServer = async (data: Exclude) => {
       axios.post(`http://localhost:3500/${maxNumber}`, data);
     };
-    if (excludeObj.numbers.length === 6 && excludeObj.chance !== 0) {
+    if (excludeObj.numbers.length === 6 && excludeObj.chance !== 0 && isLast4) {
       const data4 = { ...excludeObj, id: data2.getTime() };
       const data = [...lastResults, data4];
       handleExclude(data);
@@ -498,8 +499,8 @@ const LottoHenyo = () => {
       return { ...res, chance: res.chance + inputChance };
     });
     setlastResults(test);
-    const lastResults2 = test.filter((result: Exclude) => result.chance > 28);
-    setlastResultsPredict([...lastResults2, { numbers: all, chance: 28 }]);
+    const lastResults2 = test.filter((result: Exclude) => result.chance > 2);
+    setlastResultsPredict([...lastResults2, { numbers: all, chance: 2 }]);
   };
 
   // include = true,
@@ -520,7 +521,7 @@ const LottoHenyo = () => {
   const handlesetColorCount = (lastResults: Exclude[]) => {
     const count: string[] = [];
     lastResults
-      .filter((a, b) => a.chance <= 48)
+      .filter((a, b) => a.chance <= 22)
       .forEach((result) => {
         result.numbers.forEach((num) => {
           const num1 = handleOnce20draw(num, lastResults, result.chance);
@@ -615,10 +616,13 @@ const LottoHenyo = () => {
   const handleAddPicks = () => {
     handleAddLast(lastResults, {
       numbers: picks,
-      chance: 28,
+      chance: 2,
       id: new Date().getTime(),
     });
-    setShowClose((prev) => !prev);
+  };
+
+  const handleSetPicks = (numbers: number[]) => {
+    setPicks(numbers);
   };
   return (
     <div className=" flex min-w-[90%] max-h-[600px] overflow-hidden border-2 rounded-xl border-[#0D1816] shadow-xl">
@@ -631,7 +635,10 @@ const LottoHenyo = () => {
       <div className=" flex-1  p-5 flex flex-col gap-3">
         <div className="flex justify-between bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01] rounded-t-xl p-5">
           <div className=" flex justify-center items-center gap-2">
-            <div className=" flex justify-center items-center w-12 h-12 bg-[#7cdc01] text-[30px] font-extrabold rounded-full">
+            <div
+              onClick={() => setShowClose((prev) => !prev)}
+              className=" flex justify-center items-center w-12 h-12 bg-[#7cdc01] text-[30px] font-extrabold rounded-full"
+            >
               {maxNumber}
             </div>
             <div className=" text-white">Grand Lotto</div>
@@ -645,7 +652,7 @@ const LottoHenyo = () => {
         </div>
 
         <div className="grid grid-cols-[minmax(130px,130px)_minmax(0,_1fr)_minmax(130px,130px)_minmax(0,_1fr)] gap-4">
-          <PerfectScrollbar className=" p-2  border-2 border-green-900 rounded-lg flex flex-col h-[460px]  bg-[#0D1816]">
+          <PerfectScrollbar className=" p-2  rounded-lg flex flex-col h-[460px]  bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
             {colorCount
               .sort((a, b) => b.count - a.count)
               .map((color) => (
@@ -738,15 +745,20 @@ const LottoHenyo = () => {
                       </div>
                     ))}
                     <div
-                      className={`${
-                        showClose ? "" : "hidden"
-                      } bg-red-600 flex justify-center items-center rounded-full text-white w-fit`}
+                      className={`  flex justify-center items-center rounded-full text-white w-fit`}
                     >
-                      <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                      <div
+                        onClick={() => handleSetPicks(res.numbers)}
+                        className={`flex justify-center items-center w-10 h-10 rounded-md ${
+                          res.chance === 2 ? " bg-green-900" : "bg-orange-400"
+                        } `}
+                      >
                         {res.chance}
                       </div>
                       <button
-                        className={` bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                        className={`${
+                          showClose ? "" : "hidden"
+                        } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
                         onClick={() => handleRemove(res.chance, res.id)}
                       >
                         x
@@ -760,11 +772,11 @@ const LottoHenyo = () => {
             <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg">
               Last Results
             </div>
-            <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg text-white">
+            <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg text-white border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
               Next Draw Colors
             </div>
           </div>
-          <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px]">
+          <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
             <div>
               {lastResultsPredict
                 .sort((a, b) => a.chance - b.chance)
