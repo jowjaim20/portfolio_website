@@ -620,7 +620,28 @@ const LottoHenyo = () => {
       id: new Date().getTime(),
     });
   };
-
+  // tue: [42, 49, 58],
+  // wed: [45, 55],
+  // thu: [42, 49],
+  // fri: [45, 58],
+  // sat: [42, 55],
+  // sun: [49, 58],
+  const schedule = [
+    { day: "Mon", game: [45, 55] },
+    { day: "Tue", game: [42, 49, 58] },
+    { day: "Wed", game: [45, 55] },
+    { day: "Thu", game: [42, 49] },
+    { day: "Fri", game: [45, 58] },
+    { day: "Sat", game: [42, 55] },
+    { day: "Sun", game: [49, 58] },
+  ];
+  const gameName: any = {
+    "42": "Lotto ",
+    "45": "Mega Lotto ",
+    "49": "Super Lotto ",
+    "55": "Grand Lotto ",
+    "58": "Ultra Lotto ",
+  };
   const handleSetPicks = (numbers: number[]) => {
     setPicks(numbers);
   };
@@ -641,7 +662,7 @@ const LottoHenyo = () => {
             >
               {maxNumber}
             </div>
-            <div className=" text-white">Grand Lotto</div>
+            <div className=" text-white">{gameName[maxNumber]}</div>
           </div>
           <div
             onClick={updateServer}
@@ -770,7 +791,23 @@ const LottoHenyo = () => {
           </div>
           <div className=" grid  grid-rows-2  gap-2">
             <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg">
-              Last Results
+              <div> Last Results</div>
+              <div>
+                {schedule.map((sched) => (
+                  <div className=" flex">
+                    <div className=" bg-orange-300 p-1 flex justify-center items-center w-10 rounded">
+                      {sched.day}
+                    </div>
+                    <div className="flex justify-center items-center">
+                      {sched.game.map((num) => (
+                        <div className=" w-2 h-2 flex justify-center items-center p-3 text-sm text-white font-medium rounded-full bg-slate-600">
+                          {num}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg text-white border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
               Next Draw Colors
