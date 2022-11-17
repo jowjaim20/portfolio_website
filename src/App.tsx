@@ -7,7 +7,7 @@ import LottoHenyo from "./components/LottoHenyo";
 
 function App() {
   return (
-    <div className=" flex justify-center items-center  w-screen h-screen border-2">
+    <div className=" flex justify-center items-center  w-screen  border-2">
       <LottoHenyo />
     </div>
   );

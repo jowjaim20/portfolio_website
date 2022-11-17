@@ -38,6 +38,7 @@ const NumWrap: React.FC<{
   clicked?: number;
   once20Draw?: boolean;
   once10Draw?: boolean;
+  excludeArr?: number[];
   picks?: number[];
   handlesetColorCount?: React.Dispatch<React.SetStateAction<number[]>>;
 }> = ({
@@ -57,18 +58,28 @@ const NumWrap: React.FC<{
   once20Draw = false,
   once10Draw = false,
   clicked = 0,
+  excludeArr,
   handlesetColorCount,
 }) => {
   const id: any = num.toString();
   const included = picks?.includes(num);
+  const excluded = excludeArr?.includes(num);
 
   return (
     <div
       className={`${
-        included
-          ? "text-gray-900 border-4 border-orange-500 text-[25px] font-extrabold"
-          : ""
-      } ${
+        excluded && included
+          ? " outline-dashed outline-[6px] border-[6px] border-orange-500 outline-orange-500"
+          : excluded
+          ? " text-black text-[30px] outline-[6px] outline-dashed outline-pink-400"
+        :  included
+        ? "text-gray-900 border-[6px] border-orange-500 text-[25px] font-extrabold"
+    :''
+      } 
+      
+      
+          
+       ${
         clicked === num
           ? " text-red-400 border-2 border-[#0D1816] text-[30px] font-extrabold"
           : " text-gray-700 "
@@ -195,6 +206,7 @@ const LottoHenyo = () => {
     numbers: [],
     chance: 0,
   });
+  const [excludeArr, setExcludeArr] = useState<number[]>([]);
   const [showClose, setShowClose] = useState(false);
   const [clicked, setClicked] = useState(0);
   const [input, setInput] = useState("");
@@ -252,10 +264,12 @@ const LottoHenyo = () => {
     const filtered = (index: number) => {
       const data = all.filter((num: any) => {
         const data = lastResults
-          .filter((result: Exclude) => result.chance < 76)
+          .filter(
+            (result: Exclude) => result.chance >= 4 && result.chance >= 42
+          )
           .map((result: Exclude) => result.numbers[index]);
         const dat2 = data.includes(num);
-        //console.log(data);
+
         return !dat2;
       });
       return data;
@@ -277,6 +291,34 @@ const LottoHenyo = () => {
     return [1, 2];
   };
 
+  const countAllNumbers = (lastResults: Exclude[], all: number[]) => {
+    let data = [];
+    const filtered = lastResults.filter(
+      (res) => res.chance >= 4 && res.chance <= 62
+    );
+    const allCount = all.map((num) => {
+      const allsame = filtered.flatMap((result) => [
+        ...result.numbers.filter((number) => number === num),
+      ]);
+      return {
+        num: num,
+        count: allsame.length,
+      };
+    });
+
+    console.log(allCount);
+
+    // const countObj = all.map((num: number) => {
+    //   const count = data2.filter((data) => data === num);
+    //   return {
+    //     num: num,
+    //     count: count,
+    //   };
+    // });
+    setCount(allCount);
+    // return [1, 2];
+  };
+
   useEffect(() => {
     const getData = async () => {
       const data = await axios.get(`http://localhost:3500/${maxNumber}`);
@@ -284,8 +326,8 @@ const LottoHenyo = () => {
       for (let index = 0; index < maxNumber; index++) {
         all.push(index + 1);
       }
-
-      identifyNotIncluded(data.data, all);
+      countAllNumbers(data.data, all);
+      // identifyNotIncluded(data.data, all);
       setAll(all);
       setlastResults(data.data);
       handlesetColorCount(data.data);
@@ -322,7 +364,6 @@ const LottoHenyo = () => {
     updateServer();
 
     const data = lastResults.filter((res) => chance !== res.chance);
-    console.log(data);
     setlastResults([...data]);
   };
 
@@ -517,6 +558,216 @@ const LottoHenyo = () => {
   // once20Draw = false,
   // once10Draw = false,
   // clicked = 0,
+  interface Color {
+    number: number;
+    color: string;
+  }
+
+  const handleFindExclude = (lastResults: Exclude[]) => {
+    const count: Color[] = [];
+    lastResults
+      .filter((result) => result.chance >= 4 && result.chance <= 42)
+      .forEach((result) => {
+        result.numbers.forEach((num) => {
+          const num1 = handleOnce20draw(num, lastResults, result.chance);
+
+          const num2 = handleOnce10draw(num, lastResults, result.chance);
+
+          const num3 = handleTrice3Draws(num, lastResults, result.chance);
+
+          const num4 = handleTwice3Draws(num, lastResults, result.chance);
+
+          const num5 = handleTrice5Draws(num, lastResults, result.chance);
+
+          const num6 = handleTwice5Draws(num, lastResults, result.chance);
+
+          const num7 = handleFivetimes(num, lastResults, result.chance);
+
+          const num8 = handleFourtimes(num, lastResults, result.chance);
+
+          const num9 = handleTrice(num, lastResults, result.chance);
+
+          const num10 = handleTwice(num, lastResults, result.chance);
+
+          const num11 = handleSingle(num, lastResults);
+
+          const color = num1
+            ? "white"
+            : num2
+            ? "green"
+            : num3
+            ? "pink"
+            : num4
+            ? "skyBlue"
+            : num5
+            ? "darkPink"
+            : num6
+            ? "violet"
+            : num7
+            ? "black"
+            : num8
+            ? "gray"
+            : num9
+            ? "red"
+            : num10
+            ? "blue"
+            : num11
+            ? "uknown"
+            : "none";
+          //console.log(color);
+          count.push({ number: num, color: color });
+        });
+      });
+    // const counter = (count: string[]) => {
+    //   const colorsCount = [
+    //     { number: "white", count: 0, desc: "1/20" },
+    //     { number: "green", count: 0, desc: "1/10" },
+    //     { number: "pink", count: 0, desc: "3/3" },
+    //     { number: "skyBlue", count: 0, desc: "2/3" },
+    //     { number: "darkPink", count: 0, desc: "3/5" },
+    //     { number: "violet", count: 0, desc: "2/5" },
+    //     { number: "black", count: 0, desc: "5/10" },
+    //     { number: "gray", count: 0, desc: "4/10" },
+    //     { number: "red", count: 0, desc: "3/10" },
+    //     { number: "blue", count: 0, desc: "2/10" },
+    //   ];
+
+    //   const data = colorsCount.map((d) => {
+    //     const length = count.filter((e) => e === d.number);
+    //     //console.log(length);
+    //     return { ...d, count: length.length };
+    //   });
+    //   setColorCount(data);
+    // };
+
+    return count;
+  };
+
+  const handleFindExclude2 = (lastResults: Exclude[]) => {
+    const count: Color[] = [];
+    lastResults
+      .filter((a, b) => a.chance === 2)
+      .forEach((result) => {
+        result.numbers.forEach((num) => {
+          const num1 = handleOnce20draw(num, lastResults, result.chance);
+
+          const num2 = handleOnce10draw(num, lastResults, result.chance);
+
+          const num3 = handleTrice3Draws(num, lastResults, result.chance);
+
+          const num4 = handleTwice3Draws(num, lastResults, result.chance);
+
+          const num5 = handleTrice5Draws(num, lastResults, result.chance);
+
+          const num6 = handleTwice5Draws(num, lastResults, result.chance);
+
+          const num7 = handleFivetimes(num, lastResults, result.chance);
+
+          const num8 = handleFourtimes(num, lastResults, result.chance);
+
+          const num9 = handleTrice(num, lastResults, result.chance);
+
+          const num10 = handleTwice(num, lastResults, result.chance);
+
+          const num11 = handleSingle(num, lastResults);
+
+          const color = num1
+            ? "white"
+            : num2
+            ? "green"
+            : num3
+            ? "pink"
+            : num4
+            ? "skyBlue"
+            : num5
+            ? "darkPink"
+            : num6
+            ? "violet"
+            : num7
+            ? "black"
+            : num8
+            ? "gray"
+            : num9
+            ? "red"
+            : num10
+            ? "blue"
+            : num11
+            ? "uknown"
+            : "none";
+          //console.log(color);
+          count.push({ number: num, color: color });
+        });
+      });
+    // const counter = (count: string[]) => {
+    //   const colorsCount = [
+    //     { number: "white", count: 0, desc: "1/20" },
+    //     { number: "green", count: 0, desc: "1/10" },
+    //     { number: "pink", count: 0, desc: "3/3" },
+    //     { number: "skyBlue", count: 0, desc: "2/3" },
+    //     { number: "darkPink", count: 0, desc: "3/5" },
+    //     { number: "violet", count: 0, desc: "2/5" },
+    //     { number: "black", count: 0, desc: "5/10" },
+    //     { number: "gray", count: 0, desc: "4/10" },
+    //     { number: "red", count: 0, desc: "3/10" },
+    //     { number: "blue", count: 0, desc: "2/10" },
+    //   ];
+
+    //   const data = colorsCount.map((d) => {
+    //     const length = count.filter((e) => e === d.number);
+    //     //console.log(length);
+    //     return { ...d, count: length.length };
+    //   });
+    //   setColorCount(data);
+    // };
+
+    return count;
+  };
+
+  const handleSameColor = (color: string) => {
+    const lastResultsColors = handleFindExclude(lastResults);
+    const allNumbersColors = handleFindExclude2(lastResultsPredict).filter(
+      (num) => num.color === color
+    );
+
+    const filtered = allNumbersColors.filter((numObj) =>
+      lastResultsColors
+        .filter((numObj2) => numObj2.number === numObj.number)
+        .filter((numOBJ3) => numOBJ3.color === numObj.color)
+        .some((obj) => obj.color === numObj.color)
+    );
+    const excludeArr = filtered.map((obj) => obj.number);
+    setExcludeArr((prev) => [...prev, ...excludeArr]);
+  };
+  const handleSameColor2 = (color: string, frequency: number) => {
+    const lastResultsColors = handleFindExclude(lastResults);
+    const allNumbersColors = handleFindExclude2(lastResultsPredict).filter(
+      (num) => num.color === color
+    );
+
+    const filtered = allNumbersColors.filter((numObj) => {
+      const obj = lastResultsColors
+        .filter((numObj2) => numObj2.number === numObj.number)
+        .filter((numOBJ3) => numOBJ3.color === numObj.color);
+      console.log(obj);
+      return obj.length >= frequency ? true : false;
+    });
+    const excludeArr = filtered.map((obj) => obj.number);
+    console.log(excludeArr);
+    setExcludeArr((prev) => [...prev, ...excludeArr]);
+  };
+
+  const handleExcludes = () => {
+    setExcludeArr([]);
+    handleSameColor("violet");
+    handleSameColor2("skyBlue", 2);
+    handleSameColor("green");
+    handleSameColor("pink");
+    handleSameColor("darkPink");
+    handleSameColor("blue");
+    handleSameColor("red");
+    handleSameColor("gray");
+    handleSameColor("white");
+  };
 
   const handlesetColorCount = (lastResults: Exclude[]) => {
     const count: string[] = [];
@@ -569,7 +820,7 @@ const LottoHenyo = () => {
             : num11
             ? "uknown"
             : "none";
-          console.log(color);
+          //console.log(color);
           count.push(color);
         });
       });
@@ -589,7 +840,7 @@ const LottoHenyo = () => {
 
       const data = colorsCount.map((d) => {
         const length = count.filter((e) => e === d.number);
-        //console.log(length);
+
         return { ...d, count: length.length };
       });
       setColorCount(data);
@@ -646,150 +897,10 @@ const LottoHenyo = () => {
     setPicks(numbers);
   };
   return (
-    <div className=" flex min-w-[90%] max-h-[600px] overflow-hidden border-2 rounded-xl border-[#0D1816] shadow-xl">
-      <Navigation
-        handleChangeGame={handleChangeGame}
-        handleAddPicks={handleAddPicks}
-        handleChancesUporDown={handleChancesUporDown}
-        lastResults={lastResults}
-      />
-      <div className=" flex-1  p-5 flex flex-col gap-3">
-        <div className="flex justify-between bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01] rounded-t-xl p-5">
-          <div className=" flex justify-center items-center gap-2">
-            <div
-              onClick={() => setShowClose((prev) => !prev)}
-              className=" flex justify-center items-center w-12 h-12 bg-[#7cdc01] text-[30px] font-extrabold rounded-full"
-            >
-              {maxNumber}
-            </div>
-            <div className=" text-white">{gameName[maxNumber]}</div>
-          </div>
-          <div
-            onClick={updateServer}
-            className=" text-white flex justify-center items-center"
-          >
-            {format(date, "MMMMMM d, yyyy")}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-[minmax(130px,130px)_minmax(0,_1fr)_minmax(130px,130px)_minmax(0,_1fr)] gap-4">
-          <PerfectScrollbar className=" p-2  rounded-lg flex flex-col h-[460px]  bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
-            {colorCount
-              .sort((a, b) => b.count - a.count)
-              .map((color) => (
-                <div className="flex justify-center items-center">
-                  <NumWrap
-                    num={color.count}
-                    twice={color.number === "blue"}
-                    trice={color.number === "red"}
-                    twice5Draws={color.number === "violet"}
-                    trice5Draws={color.number === "darkPink"}
-                    twice3Draws={color.number === "skyBlue"}
-                    trice3Draws={color.number === "pink"}
-                    fourTimes={color.number === "gray"}
-                    fiveTimes={color.number === "black"}
-                    once20Draw={color.number === "white"}
-                    once10Draw={color.number === "green"}
-                  />
-                  <div className="ml-2 flex flex-col p-1 w-10 h-10 justify-center items-center bg-white rounded-lg  font-medium text-black">
-                    {/* <span className=" uppercase flex justify-center items-center">
-                    {color.number}
-                  </span> */}
-
-                    {color.desc}
-                  </div>
-                </div>
-              ))}
-          </PerfectScrollbar>
-
-          <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg flex flex-col h-[460px]">
-            <PerfectScrollbar className="  max-h-full flex flex-col  items-center">
-              {lastResults
-                .sort((a, b) => a.chance - b.chance)
-                .filter((res) => res.numbers.length === 6)
-                .map((res) => (
-                  <div className={`flex ${res.chance > 60 ? "bg-black" : ""}`}>
-                    {res.numbers.map((num) => (
-                      <div
-                        onClick={() => {
-                          console.log(num);
-                          setClicked(num);
-                        }}
-                      >
-                        <NumWrap
-                          clicked={clicked}
-                          num={num}
-                          single={handleSingle(num, lastResults)}
-                          twice={handleTwice(num, lastResults, res.chance)}
-                          trice={handleTrice(num, lastResults, res.chance)}
-                          twice5Draws={handleTwice5Draws(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          trice5Draws={handleTrice5Draws(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          twice3Draws={handleTwice3Draws(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          trice3Draws={handleTrice3Draws(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          fourTimes={handleFourtimes(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          fiveTimes={handleFivetimes(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          once20Draw={handleOnce20draw(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                          once10Draw={handleOnce10draw(
-                            num,
-                            lastResults,
-                            res.chance
-                          )}
-                        />
-                      </div>
-                    ))}
-                    <div
-                      className={`  flex justify-center items-center rounded-full text-white w-fit`}
-                    >
-                      <div
-                        onClick={() => handleSetPicks(res.numbers)}
-                        className={`flex justify-center items-center w-10 h-10 rounded-md ${
-                          res.chance === 2 ? " bg-green-900" : "bg-orange-400"
-                        } `}
-                      >
-                        {res.chance}
-                      </div>
-                      <button
-                        className={`${
-                          showClose ? "" : "hidden"
-                        } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                        onClick={() => handleRemove(res.chance, res.id)}
-                      >
-                        x
-                      </button>
-                    </div>
-                  </div>
-                ))}
-            </PerfectScrollbar>
-          </div>
-          <div className=" grid  grid-rows-2  gap-2">
+    <div>
+      <div className=" flex flex-col gap-3">
+        <div className=" flex flex-col">
+          <div className="   gap-2">
             <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg">
               <div> Last Results</div>
               <div>
@@ -809,111 +920,240 @@ const LottoHenyo = () => {
                 ))}
               </div>
             </div>
-            <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg text-white border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
-              Next Draw Colors
-            </div>
-          </div>
-          <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
-            <div>
-              {lastResultsPredict
-                .sort((a, b) => a.chance - b.chance)
-                .filter((res) => res.numbers.length > 6)
-                .map((res) => (
-                  <div className="grid grid-cols-6">
-                    {res.numbers.map((num) => (
-                      <div
-                        className="relative z-0"
-                        onClick={() => {
-                          console.log(num);
-                          setClicked(num);
-                          handlePicks(num);
-                        }}
-                      >
-                        <NumWrap
-                          picks={picks}
-                          num={num}
-                          single={handleSingle(num, lastResultsPredict)}
-                          twice={handleTwice(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          trice={handleTrice(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          twice5Draws={handleTwice5Draws(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          trice5Draws={handleTrice5Draws(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          twice3Draws={handleTwice3Draws(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          trice3Draws={handleTrice3Draws(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          fourTimes={handleFourtimes(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          fiveTimes={handleFivetimes(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          once20Draw={handleOnce20draw(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                          once10Draw={handleOnce10draw(
-                            num,
-                            lastResultsPredict,
-                            res.chance
-                          )}
-                        />
-                        {count.map(
-                          (obj) =>
-                            obj.num === num && (
-                              <div
-                                className="flex
-        "
-                              >
-                                <NumWrap2 num={obj.count} once10Draw />
-                              </div>
-                            )
-                        )}
-                      </div>
-                    ))}
-                    <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
-                      {res.chance}
-                    </div>
-                    <button
-                      className={`${
-                        lastResultsPredict.length <= 30 ? "hidden" : ""
-                      } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
-                      onClick={() => setlastResultsPredict([])}
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-            </div>
+            {/* <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg text-white border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+                Next Draw Colors
+              </div> */}
           </div>
         </div>
       </div>
+      
+      
+      <PerfectScrollbar className=" p-2  rounded-lg flex flex-col    bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+        {colorCount
+          .sort((a, b) => b.count - a.count)
+          .map((color) => (
+            <div className="flex justify-center items-center">
+              <NumWrap
+                num={color.count}
+                twice={color.number === "blue"}
+                trice={color.number === "red"}
+                twice5Draws={color.number === "violet"}
+                trice5Draws={color.number === "darkPink"}
+                twice3Draws={color.number === "skyBlue"}
+                trice3Draws={color.number === "pink"}
+                fourTimes={color.number === "gray"}
+                fiveTimes={color.number === "black"}
+                once20Draw={color.number === "white"}
+                once10Draw={color.number === "green"}
+              />
+              <div className="ml-2 flex flex-col p-1 w-10 h-10 justify-center items-center bg-white rounded-lg  font-medium text-black">
+                {/* <span className=" uppercase flex justify-center items-center">
+                    {color.number}
+                  </span> */}
+
+                {color.desc}
+              </div>
+            </div>
+          ))}
+      </PerfectScrollbar>
+      <Navigation
+        handleChangeGame={handleChangeGame}
+        handleAddPicks={handleAddPicks}
+        handleChancesUporDown={handleChancesUporDown}
+        lastResults={lastResults}
+        />
+        <div className="flex justify-between bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01] rounded-t-xl p-5">
+        <div className=" flex justify-center items-center gap-2">
+          <div
+            onClick={() => {
+              setShowClose((prev) => !prev);
+              handleExcludes();
+            }}
+            className=" flex justify-center items-center w-12 h-12 bg-[#7cdc01] text-[30px] font-extrabold rounded-full"
+          >
+            {maxNumber}
+          </div>
+          <div className=" text-white">{gameName[maxNumber]}</div>
+        </div>
+        <div
+          onClick={updateServer}
+          className=" text-white flex justify-center items-center"
+        >
+          {format(date, "MMMMMM d, yyyy")}
+        </div>
+      </div>
+
+      <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg flex flex-col h-[460px]">
+        <PerfectScrollbar className="  max-h-full flex flex-col  items-center">
+          {lastResults
+            .sort((a, b) => a.chance - b.chance)
+            .filter((res) => res.numbers.length === 6)
+            .map((res) => (
+              <div className={`flex ${res.chance > 60 ? "bg-black" : ""}`}>
+                {res.numbers.map((num) => (
+                  <div
+                    onClick={() => {
+                      setClicked(num);
+                    }}
+                  >
+                    <NumWrap
+                      clicked={clicked}
+                      num={num}
+                      single={handleSingle(num, lastResults)}
+                      twice={handleTwice(num, lastResults, res.chance)}
+                      trice={handleTrice(num, lastResults, res.chance)}
+                      twice5Draws={handleTwice5Draws(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                      trice5Draws={handleTrice5Draws(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                      twice3Draws={handleTwice3Draws(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                      trice3Draws={handleTrice3Draws(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                      fourTimes={handleFourtimes(num, lastResults, res.chance)}
+                      fiveTimes={handleFivetimes(num, lastResults, res.chance)}
+                      once20Draw={handleOnce20draw(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                      once10Draw={handleOnce10draw(
+                        num,
+                        lastResults,
+                        res.chance
+                      )}
+                    />
+                  </div>
+                ))}
+                <div
+                  className={`  flex justify-center items-center rounded-full text-white w-fit`}
+                >
+                  <div
+                    onClick={() => handleSetPicks(res.numbers)}
+                    className={`flex justify-center items-center w-10 h-10 rounded-md ${
+                      res.chance === 2 ? " bg-green-900" : "bg-orange-400"
+                    } `}
+                  >
+                    {res.chance}
+                  </div>
+                  <button
+                    className={`${
+                      showClose ? "" : "hidden"
+                    } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                    onClick={() => handleRemove(res.chance, res.id)}
+                  >
+                    x
+                  </button>
+                </div>
+              </div>
+            ))}
+        </PerfectScrollbar>
+      </div>
+      <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+        <div>
+          {lastResultsPredict
+            .sort((a, b) => a.chance - b.chance)
+            .filter((res) => res.numbers.length > 6)
+            .map((res) => (
+              <div className="grid grid-cols-6">
+                {res.numbers.map((num) => (
+                  <div
+                    className="relative z-0"
+                    onClick={() => {
+                      setClicked(num);
+                      handlePicks(num);
+                    }}
+                  >
+                    <NumWrap
+                      excludeArr={excludeArr}
+                      picks={picks}
+                      num={num}
+                      single={handleSingle(num, lastResultsPredict)}
+                      twice={handleTwice(num, lastResultsPredict, res.chance)}
+                      trice={handleTrice(num, lastResultsPredict, res.chance)}
+                      twice5Draws={handleTwice5Draws(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      trice5Draws={handleTrice5Draws(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      twice3Draws={handleTwice3Draws(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      trice3Draws={handleTrice3Draws(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      fourTimes={handleFourtimes(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      fiveTimes={handleFivetimes(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      once20Draw={handleOnce20draw(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                      once10Draw={handleOnce10draw(
+                        num,
+                        lastResultsPredict,
+                        res.chance
+                      )}
+                    />
+                    {count.map(
+                      (obj) =>
+                        obj.num === num && (
+                          <div
+                            className="flex
+        "
+                          >
+                            <NumWrap2 num={obj.count} once10Draw />
+                          </div>
+                        )
+                    )}
+                  </div>
+                ))}
+                <div className="flex justify-center items-center w-10 h-10 rounded-md bg-orange-400">
+                  {res.chance}
+                </div>
+                <button
+                  className={`${
+                    lastResultsPredict.length <= 30 ? "hidden" : ""
+                  } bg-red-600 flex justify-center items-center w-10 h-10 rounded-full text-white`}
+                  onClick={() => setlastResultsPredict([])}
+                >
+                  x
+                </button>
+              </div>
+            ))}
+        </div>
+      </div>
+      
+      
     </div>
   );
 };
