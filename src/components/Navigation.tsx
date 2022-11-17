@@ -20,7 +20,7 @@ const Navigation: React.FC<any> = ({
   cd,
 }) => {
   return (
-    <div className=" bg-[#0D1816] flex flex-col max-h-[600px] w-40 items-center">
+    <div className=" bg-[#0D1816] flex max-h-[600px] w-full items-center">
       <div className=" h-[100px] w-[100px] rounded-full bg-[#0D3805] flex justify-center items-center">
         <div className=" font-extrabold text-[25px] flex flex-col leading-none text-white">
           <span>Lotto</span>
