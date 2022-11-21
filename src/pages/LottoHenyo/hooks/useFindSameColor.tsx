@@ -20,11 +20,11 @@ const useFindSameColor = () => {
       const obj = lastResultsColors
         .filter((numObj2) => numObj2.number === numObj.number)
         .filter((numOBJ3) => numOBJ3.color === numObj.color);
-      console.log(obj);
+
       return obj.length >= frequency ? true : false;
     });
     const excludeArr = filtered.map((obj) => obj.number);
-    console.log(excludeArr);
+
     setExcludeArr((prev) => [...prev, ...excludeArr]);
   };
 

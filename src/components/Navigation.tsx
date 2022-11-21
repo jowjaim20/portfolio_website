@@ -69,16 +69,3 @@ const Navigation: React.FC<any> = ({
 };
 
 export default Navigation;
-
-type Fruits = "apple" | "mango";
-
-interface Test {
-  1: string;
-  2: number;
-}
-
-type All<T, K extends keyof T> = {
-  [P in K]: K;
-};
-
-type New = All<Test, 2 | 1>;

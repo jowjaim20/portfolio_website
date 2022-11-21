@@ -10,7 +10,7 @@ const useHandleXDraws = () => {
   ) => {
     const data = lastResults.filter(
       (res) =>
-        res.chance >= chance && res.chance <= chance + (chanceAdd - 1) * 2
+        res.chance >= chance && res.chance <= chance + (chanceAdd *2 -2)
     );
     const count = data
       .map((data) => data.numbers.filter((num) => num === nums))

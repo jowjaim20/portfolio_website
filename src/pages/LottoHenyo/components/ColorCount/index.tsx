@@ -11,7 +11,7 @@ const ColorCount: React.FC<{
   }[];
 }> = ({ colorCount }) => {
   return (
-    <PerfectScrollbar className=" p-2  rounded-lg flex flex-col    bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+    <PerfectScrollbar className=" p-2  rounded-lg grid grid-cols-5   bg-[#0D1816] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
       {colorCount
         .sort((a, b) => b.count - a.count)
         .map((color) => (

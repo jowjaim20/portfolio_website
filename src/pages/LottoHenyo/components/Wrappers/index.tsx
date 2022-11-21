@@ -1,7 +1,7 @@
 import React from "react";
 import useHandleXDraws from "../../hooks/useHandleXDraws";
 import NumWrap from "../NumWrap";
-import { Exclude } from "../enums";
+import { colorObj, ColorObject, Exclude } from "../enums";
 
 export const NumWrapWrapperPredict: React.FC<{
   num: number;
@@ -11,24 +11,20 @@ export const NumWrapWrapperPredict: React.FC<{
   res: Exclude;
 }> = ({ num, excludeArr, picks, lastResultsPredict, res }) => {
   const { handleXdraws } = useHandleXDraws();
-  return (
-    <NumWrap
-      excludeArr={excludeArr}
-      picks={picks}
-      num={num}
-      single={handleXdraws(num, lastResultsPredict, res.chance, 1, 10000)}
-      twice={handleXdraws(num, lastResultsPredict, res.chance, 2)}
-      trice={handleXdraws(num, lastResultsPredict, res.chance, 3)}
-      twice5Draws={handleXdraws(num, lastResultsPredict, res.chance, 2, 5)}
-      trice5Draws={handleXdraws(num, lastResultsPredict, res.chance, 3, 5)}
-      twice3Draws={handleXdraws(num, lastResultsPredict, res.chance, 2, 3)}
-      trice3Draws={handleXdraws(num, lastResultsPredict, res.chance, 3, 3)}
-      fourTimes={handleXdraws(num, lastResultsPredict, res.chance, 4)}
-      fiveTimes={handleXdraws(num, lastResultsPredict, res.chance, 5)}
-      once20Draw={handleXdraws(num, lastResultsPredict, res.chance, 1, 20)}
-      once10Draw={handleXdraws(num, lastResultsPredict, res.chance, 1)}
-    />
-  );
+  
+
+  let props: { bg: ColorObject[] } = { bg: [] };
+  colorObj.forEach((obj) => {
+    if (
+      handleXdraws(num, lastResultsPredict, res.chance, obj.count, obj.draws)
+    ) {
+      props.bg.push(obj);
+    }
+  });
+  console.log(props);
+  console.log("here");
+
+  return <NumWrap excludeArr={excludeArr} picks={picks} num={num} {...props} />;
 };
 
 export const NumWrapWrapperlastResult: React.FC<{
@@ -38,23 +34,15 @@ export const NumWrapWrapperlastResult: React.FC<{
   res: Exclude;
 }> = ({ clicked, num, lastResults, res }) => {
   const { handleXdraws } = useHandleXDraws();
-  return (
-    <NumWrap
-      clicked={clicked}
-      num={num}
-      single={handleXdraws(num, lastResults, res.chance, 1, 10000)}
-      twice={handleXdraws(num, lastResults, res.chance, 2)}
-      trice={handleXdraws(num, lastResults, res.chance, 3)}
-      twice5Draws={handleXdraws(num, lastResults, res.chance, 2, 5)}
-      trice5Draws={handleXdraws(num, lastResults, res.chance, 3, 5)}
-      twice3Draws={handleXdraws(num, lastResults, res.chance, 2, 3)}
-      trice3Draws={handleXdraws(num, lastResults, res.chance, 3, 3)}
-      fourTimes={handleXdraws(num, lastResults, res.chance, 4)}
-      fiveTimes={handleXdraws(num, lastResults, res.chance, 5)}
-      once20Draw={handleXdraws(num, lastResults, res.chance, 1, 20)}
-      once10Draw={handleXdraws(num, lastResults, res.chance, 1)}
-    />
-  );
+
+  let props: { bg: ColorObject[] } = { bg: [] };
+  colorObj.forEach((obj) => {
+    if (handleXdraws(num, lastResults, res.chance, obj.count, obj.draws)) {
+      props.bg.push(obj);
+    }
+  });
+
+  return <NumWrap clicked={clicked} num={num} {...props} />;
 };
 
 export const ColorsCountWrapper: React.FC<{
@@ -64,19 +52,11 @@ export const ColorsCountWrapper: React.FC<{
     desc: string;
   };
 }> = ({ color }) => {
-  return (
-    <NumWrap
-      num={color.count}
-      twice={color.number === "blue"}
-      trice={color.number === "red"}
-      twice5Draws={color.number === "violet"}
-      trice5Draws={color.number === "darkPink"}
-      twice3Draws={color.number === "skyBlue"}
-      trice3Draws={color.number === "pink"}
-      fourTimes={color.number === "gray"}
-      fiveTimes={color.number === "black"}
-      once20Draw={color.number === "white"}
-      once10Draw={color.number === "green"}
-    />
-  );
+  let props: { bg: ColorObject[] } = { bg: [] };
+  colorObj.forEach((obj) => {
+    if (color.number === obj.color) {
+      props.bg.push(obj);
+    }
+  });
+  return <NumWrap num={color.count} {...props} />;
 };

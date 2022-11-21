@@ -618,7 +618,6 @@ const NumberGenerator = () => {
                       {res.numbers.map((num) => (
                         <div
                           onClick={() => {
-                            console.log(num);
                             setClicked(num);
                           }}
                         >
@@ -702,7 +701,6 @@ const NumberGenerator = () => {
                         <div
                           className="relative z-0"
                           onClick={() => {
-                            console.log(num);
                             setClicked(num);
                             handlePicks(num);
                           }}
