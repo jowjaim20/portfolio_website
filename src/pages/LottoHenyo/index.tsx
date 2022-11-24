@@ -113,6 +113,7 @@ const LottoHenyo = () => {
 
   return (
     <div>
+      <div className=" test">test</div>
       <ColorCount {...{ colorCount }} />
       <Navigation
         {...{
