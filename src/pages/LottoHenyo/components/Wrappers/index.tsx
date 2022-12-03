@@ -11,7 +11,6 @@ export const NumWrapWrapperPredict: React.FC<{
   res: Exclude;
 }> = ({ num, excludeArr, picks, lastResultsPredict, res }) => {
   const { handleXdraws } = useHandleXDraws();
-  
 
   let props: { bg: ColorObject[] } = { bg: [] };
   colorObj.forEach((obj) => {
@@ -21,8 +20,6 @@ export const NumWrapWrapperPredict: React.FC<{
       props.bg.push(obj);
     }
   });
-  console.log(props);
-  console.log("here");
 
   return <NumWrap excludeArr={excludeArr} picks={picks} num={num} {...props} />;
 };

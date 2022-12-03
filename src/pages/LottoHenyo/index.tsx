@@ -2,20 +2,34 @@ import React, { useEffect, useState } from "react";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import axios from "axios";
 import Navigation from "../../components/Navigation";
-import { Exclude, Count, game, CountI } from "./components/enums";
+import {
+  Exclude,
+  Count,
+  game,
+  CountI,
+  ColorObject,
+  colorObj,
+} from "./components/enums";
 import useCountColor from "./hooks/useCountColor";
 import LastResults from "./components/LastResults";
 import Header from "./components/Header";
 import ColorCount from "./components/ColorCount";
 import LastResultsPredict from "./components/LastResultsPredict";
 import Schedule from "./components/Schedule";
+import HomePage from "../HomePage";
+import PicksArr from "./components/PicksArr";
+import useHandleXDraws from "./hooks/useHandleXDraws";
 
 const LottoHenyo = () => {
+  const { handleXdraws } = useHandleXDraws();
   const { handlesetColorCount } = useCountColor();
 
   const [all, setAll] = useState<number[]>([]);
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
   const [lastResultsPredict, setlastResultsPredict] = useState<Exclude[]>([]);
+  const [picksArr, setPicksArr] = useState<{ picks: number[]; id: number }[]>(
+    []
+  );
   const [picks, setPicks] = useState<number[]>([]);
   const [excludeArr, setExcludeArr] = useState<number[]>([]);
   const [showClose, setShowClose] = useState(false);
@@ -44,6 +58,8 @@ const LottoHenyo = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await axios.get(`http://localhost:3500/${maxNumber}`);
+      const data2 = await axios.get(`http://localhost:3500/picks`);
+
       const all = [];
       for (let index = 0; index < maxNumber; index++) {
         all.push(index + 1);
@@ -51,6 +67,7 @@ const LottoHenyo = () => {
       countAllNumbers(data.data, all);
       setAll(all);
       setlastResults(data.data);
+      setPicksArr(data2.data);
       handlesetColorCount(data.data, setColorCount);
       const lastResults2 = data.data.filter(
         (result: Exclude) => result.chance > 2
@@ -75,6 +92,33 @@ const LottoHenyo = () => {
     }
   };
 
+  const sortColor = () => {
+    const newarr = lastResults.map((exclude) => {
+      const sort = exclude.numbers.map((num) => {
+        let numr = 0;
+        colorObj.forEach((obj) => {
+          if (
+            handleXdraws(
+              num,
+              lastResults,
+              exclude.chance,
+              obj.count,
+              obj.draws
+            ) &&
+            numr === 0
+          ) {
+            //console.log(obj.id);
+            numr = obj.id;
+          }
+        });
+        return { color: numr, num: num };
+      });
+      const sorted = sort.sort((a, b) => a.color - b.color).map((c) => c.num);
+      return { ...exclude, numbers: sorted };
+    });
+    setlastResults(newarr);
+    //console.log(newarr);
+  };
   const handleChancesUporDown = (
     lastResults: Exclude[],
     inputChance: number
@@ -111,9 +155,38 @@ const LottoHenyo = () => {
     });
   };
 
+  const handleSetPicksArr = () => {
+    const data2 = new Date();
+    const updateServer = async (data: any) => {
+      axios.post(`http://localhost:3500/picks`, data);
+    };
+    if (picks.length === 6) {
+      const data4 = { picks: picks, id: data2.getTime() };
+      setPicksArr((arr) => {
+        return [...arr, data4];
+      });
+
+      updateServer(data4);
+    }
+  };
+
+  const handleSetPicksArrDelete = (id: number) => {
+    const data2 = new Date();
+    const updateServer = async (data: any) => {
+      axios.post(`http://localhost:3500/picks`, data);
+    };
+    if (picks.length === 6) {
+      const data4 = { picks: picks, id: data2.getTime() };
+      setPicksArr((arr) => {
+        return [...arr, data4];
+      });
+
+      updateServer(data4);
+    }
+  };
+
   return (
     <div>
-      <div className=" test">test</div>
       <ColorCount {...{ colorCount }} />
       <Navigation
         {...{
@@ -157,6 +230,17 @@ const LottoHenyo = () => {
         }}
       />
       <Schedule />
+      <PicksArr
+        {...{ picksArr, excludeArr, lastResultsPredict, picks, setPicksArr }}
+      />
+      <button
+        onClick={() => {
+          handleSetPicksArr();
+          sortColor();
+        }}
+      >
+        Add
+      </button>
     </div>
   );
 };
