@@ -2,6 +2,7 @@ export interface Exclude {
   numbers: number[];
   chance: number;
   id?: number;
+  comb?: string;
 }
 
 export interface Count {

@@ -32,7 +32,7 @@ const LastResultsPredict: React.FC<{
     });
   };
   return (
-    <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+    <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01] w-fit">
       {lastResultsPredict
         .sort((a, b) => a.chance - b.chance)
         .filter((res) => res.numbers.length > 6)

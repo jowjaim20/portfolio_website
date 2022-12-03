@@ -24,11 +24,11 @@ const PicksArr: React.FC<{
   };
 
   return (
-    <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01]">
+    <div className=" bg-[#0D1816] p-3 flex justify-center rounded-lg h-[460px] border-[3px] border-[#7cdc01] shadow-sm shadow-[#7cdc01] w-fit">
       <div className=" grid grid-cols-6 grid-rows-6">
         {picksArr.map((arr) =>
           arr.picks.map((num) => (
-            <div onClick={()=>handleRemove(arr.id)}>
+            <div onClick={() => handleRemove(arr.id)}>
               <NumWrapWrapperPredict
                 {...{
                   num,

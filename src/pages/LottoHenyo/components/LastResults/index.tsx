@@ -35,8 +35,13 @@ const LastResults: React.FC<{
   const handleSetPicks = (numbers: number[]) => {
     setPicks(numbers);
   };
+  const handleCountCOmb = (comb: string = "0", lastresult: Exclude[]) => {
+    const newArr = lastResults.filter((res) => res.comb === comb);
+    return newArr.length >= 2;
+  };
+
   return (
-    <div className=" p-2 bg-transparent border-2 border-green-900 rounded-lg flex flex-col h-[460px]">
+    <div className=" p-2 bg-transparent border-2 w-fit border-green-900 rounded-lg flex flex-col h-[460px]">
       <PerfectScrollbar className="  max-h-full flex flex-col  items-center">
         {lastResults
           .sort((a, b) => a.chance - b.chance)
@@ -59,12 +64,17 @@ const LastResults: React.FC<{
               >
                 <div
                   onClick={() => handleSetPicks(res.numbers)}
-                  className={`flex justify-center items-center w-10 h-10 rounded-md ${
-                    res.chance === 2 ? " bg-green-900" : "bg-orange-400"
+                  className={` flex justify-center items-center w-10 h-10 rounded-md ${
+                    handleCountCOmb(res?.comb, lastResults)
+                      ? "bg-slate-600"
+                      : res.chance === 2
+                      ? " bg-green-900"
+                      : "bg-orange-400"
                   } `}
                 >
                   {res.chance}
                 </div>
+                {/* <div className="text-gray-500">{res.comb}</div> */}
                 <button
                   className={`${
                     showClose ? "" : "hidden"

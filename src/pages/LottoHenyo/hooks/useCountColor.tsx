@@ -9,7 +9,7 @@ const useCountColor = () => {
   ) => {
     const count: string[] = [];
     lastResults
-      .filter((a, b) => a.chance <= 22)
+      .filter((a, b) => a.chance <= 42)
       .forEach((result) => {
         result.numbers.forEach((num) => {
           const color = colorObj.find((obj) =>
