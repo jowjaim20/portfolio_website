@@ -32,7 +32,7 @@ const NumWrap: React.FC<{
     <div
       className={`${iColorHitStyle()}${isClickedStyle()} 
        flex justify-center items-center text-lg font-bold rounded-full shadow-inner shadow-gray-900 w-11 h-11 p-2`}
-      style={{ backgroundColor: bg[0].hex ? bg[0].hex : "#ff00ff" }}
+      style={{ backgroundColor: bg[0]?.hex ? bg[0]?.hex : "#ff00ff" }}
     >
       {num}
     </div>
