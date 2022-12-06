@@ -93,6 +93,21 @@ const LottoHenyo = () => {
   };
 
   const sortColor = () => {
+    type X = { color: number; num: number };
+    /* function sortArray(arr: X[]) {
+      "use strict";
+
+      var counts = arr.reduce((carry: X, elem: X) => {
+        carry.color = (carry.color || 0) + 1;
+        return carry;
+      }, {} as X);
+      return arr.sort((a, b) =>
+        counts[a.color] == counts[b.color]
+          ? b.comb - a.comb
+          : counts[b.comb] - counts[a.comb]
+      );
+    }*/
+
     const newarr = lastResults.map((exclude) => {
       let comb: number[] = [];
       const sort = exclude.numbers.map((num) => {
@@ -118,6 +133,12 @@ const LottoHenyo = () => {
 
       let combinationID = comb.join("");
       const sorted = sort.sort((a, b) => a.color - b.color).map((c) => c.num);
+
+      const sorted2 = sort
+        .sort((a, b) => a.color - b.color)
+        .map((c) => c.color);
+      console.log(sort);
+
       return { ...exclude, numbers: sorted, comb: combinationID };
     });
     setlastResults(newarr);
