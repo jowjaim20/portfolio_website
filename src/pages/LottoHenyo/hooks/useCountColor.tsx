@@ -1,11 +1,12 @@
 import React from "react";
 import useHandleXDraws from "./useHandleXDraws";
-import { Exclude, colorObj, Desc } from "../components/enums";
+import { Exclude, Desc, ColorObject } from "../components/enums";
 const useCountColor = () => {
   const { handleXdraws } = useHandleXDraws();
   const handlesetColorCount = (
     lastResults: Exclude[],
     setColorCount: React.Dispatch<React.SetStateAction<Desc[]>>
+    ,colorObj: ColorObject[]
   ) => {
     const count: string[] = [];
     lastResults

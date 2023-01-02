@@ -14,7 +14,7 @@ function App() {
       <nav>
         <ul>
           <li>
-            <Link to="/calculator" >Calc</Link>
+            <Link to="/calculator">Calc</Link>
           </li>
           <li>
             <Link to="/">Home</Link>
@@ -22,8 +22,9 @@ function App() {
         </ul>
       </nav>
       <Routes>
-        <Route path="/"  element={<LottoHenyo />}  />
+        <Route path="/" element={<LottoHenyo />} />
         <Route path="/calculator" element={<HomePage />} />
+        <Route path="/game" element={<HomePage />} />
       </Routes>
     </>
   );

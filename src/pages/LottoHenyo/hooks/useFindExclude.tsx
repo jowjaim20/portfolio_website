@@ -1,8 +1,8 @@
 import React from "react";
-import { Exclude, Color, colorObj } from "../components/enums";
+import { Exclude, Color, ColorObject } from "../components/enums";
 import useHandleXDraws from "./useHandleXDraws";
 
-const useFindExclude = () => {
+const useFindExclude = (colorObj: ColorObject[]) => {
   const { handleXdraws } = useHandleXDraws();
 
   const handleFindExclude = (lastResults: Exclude[], option: 1 | 2 = 1) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { colorObj, ColorObject } from "../enums";
+import { ColorObject } from "../enums";
 
 const NumWrap: React.FC<{
   num: number;
@@ -8,7 +8,8 @@ const NumWrap: React.FC<{
   bg?: ColorObject[];
   picks?: number[];
   handlesetColorCount?: React.Dispatch<React.SetStateAction<number[]>>;
-}> = ({ picks, num, clicked = 0, excludeArr, bg = [] }) => {
+  colorObj: ColorObject[];
+}> = ({ picks, num, clicked = 0, excludeArr, bg = [], colorObj }) => {
   const included = picks?.includes(num);
   const excluded = excludeArr?.includes(num);
 

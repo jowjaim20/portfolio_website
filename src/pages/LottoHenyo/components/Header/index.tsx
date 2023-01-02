@@ -2,7 +2,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import React from "react";
 import useFindSameColor from "../../hooks/useFindSameColor";
-import { date, gameName, Exclude, colorObj } from "../enums";
+import { date, gameName, Exclude, ColorObject } from "../enums";
 
 const Header: React.FC<{
   setShowClose: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,18 +10,20 @@ const Header: React.FC<{
   maxNumber: number;
   lastResults: Exclude[];
   lastResultsPredict: Exclude[];
+  colorObj: ColorObject[];
 }> = ({
   setShowClose,
   maxNumber,
   lastResults,
   lastResultsPredict,
   setExcludeArr,
+  colorObj,
 }) => {
-  const { SameColor } = useFindSameColor();
+  const { SameColor } = useFindSameColor(colorObj);
   const handleExcludes = () => {
     setExcludeArr([]);
     SameColor(
-      colorObj.map((obj)=>obj.color),
+      colorObj.map((obj) => obj.color),
       lastResults,
       lastResultsPredict,
       setExcludeArr

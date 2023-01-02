@@ -1,8 +1,8 @@
 import React from "react";
 import useFindExclude from "./useFindExclude";
-import { Exclude, Color } from "../components/enums";
-const useFindSameColor = () => {
-  const { handleFindExclude } = useFindExclude();
+import { Exclude, Color, ColorObject } from "../components/enums";
+const useFindSameColor = (colorObj: ColorObject[]) => {
+  const { handleFindExclude } = useFindExclude(colorObj);
 
   const handleSameColor2 = (
     color: string,

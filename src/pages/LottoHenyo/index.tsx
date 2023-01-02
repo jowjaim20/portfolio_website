@@ -2,14 +2,7 @@ import React, { useEffect, useState } from "react";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import axios from "axios";
 import Navigation from "../../components/Navigation";
-import {
-  Exclude,
-  Count,
-  game,
-  CountI,
-  ColorObject,
-  colorObj,
-} from "./components/enums";
+import { Exclude, Count, game, CountI, ColorObject } from "./components/enums";
 import useCountColor from "./hooks/useCountColor";
 import LastResults from "./components/LastResults";
 import Header from "./components/Header";
@@ -19,10 +12,11 @@ import Schedule from "./components/Schedule";
 import HomePage from "../HomePage";
 import PicksArr from "./components/PicksArr";
 import useHandleXDraws from "./hooks/useHandleXDraws";
+import ColorPicker from "./components/ColorPicker";
 
 const LottoHenyo = () => {
+  const [colorObj, setColorObj] = useState<ColorObject[]>([]);
   const { handleXdraws } = useHandleXDraws();
-  const { handlesetColorCount } = useCountColor();
 
   const [all, setAll] = useState<number[]>([]);
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
@@ -36,7 +30,10 @@ const LottoHenyo = () => {
   const [clicked, setClicked] = useState(0);
   const [maxNumber, setMaxNumber] = useState<number>(58);
   const [colorCount, setColorCount] = useState<CountI[]>([]);
+  const { handlesetColorCount } = useCountColor();
   const [count, setCount] = useState<Count[]>([]);
+  const [showCPicker, setShowPicker] = useState(false);
+  const [colorObjId, setColorObjId] = useState(0);
 
   const countAllNumbers = (lastResults: Exclude[], all: number[]) => {
     const filtered = lastResults.filter(
@@ -57,6 +54,8 @@ const LottoHenyo = () => {
 
   useEffect(() => {
     const getData = async () => {
+      const data3 = await axios.get(`http://localhost:3500/colorObj`);
+      setColorObj(data3.data);
       const data = await axios.get(`http://localhost:3500/${maxNumber}`);
       const data2 = await axios.get(`http://localhost:3500/picks`);
 
@@ -68,7 +67,8 @@ const LottoHenyo = () => {
       setAll(all);
       setlastResults(data.data);
       setPicksArr(data2.data);
-      handlesetColorCount(data.data, setColorCount);
+      handlesetColorCount(data.data, setColorCount, data3.data);
+
       const lastResults2 = data.data.filter(
         (result: Exclude) => result.chance > 2
       );
@@ -211,7 +211,14 @@ const LottoHenyo = () => {
 
   return (
     <div>
-      <ColorCount {...{ colorCount }} />
+      <ColorCount
+        {...{ colorCount, colorObj, setColorObj, setShowPicker, setColorObjId }}
+      />
+      {showCPicker && (
+        <div className="">
+          <ColorPicker {...{ colorObj, id: colorObjId, setColorObj }} />
+        </div>
+      )}
       <Navigation
         {...{
           handleChangeGame,
@@ -238,6 +245,7 @@ const LottoHenyo = () => {
       </div>
       <Header
         {...{
+          colorObj,
           lastResults,
           lastResultsPredict,
           maxNumber,
@@ -255,6 +263,7 @@ const LottoHenyo = () => {
             setPicks,
             setlastResults,
             showClose,
+            colorObj,
           }}
         />
 
@@ -267,10 +276,18 @@ const LottoHenyo = () => {
             setClicked,
             setlastResultsPredict,
             setPicks,
+            colorObj,
           }}
         />
         <PicksArr
-          {...{ picksArr, excludeArr, lastResultsPredict, picks, setPicksArr }}
+          {...{
+            picksArr,
+            excludeArr,
+            lastResultsPredict,
+            picks,
+            setPicksArr,
+            colorObj,
+          }}
         />
       </div>
       <Schedule />

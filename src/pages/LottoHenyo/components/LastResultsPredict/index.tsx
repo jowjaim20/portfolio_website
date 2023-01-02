@@ -1,5 +1,5 @@
 import React from "react";
-import { Exclude, Count } from "../enums";
+import { Exclude, Count, ColorObject } from "../enums";
 import NumWrap2 from "../NumWrap2";
 import { NumWrapWrapperPredict } from "../Wrappers";
 
@@ -11,6 +11,7 @@ const LastResultsPredict: React.FC<{
   setlastResultsPredict: React.Dispatch<React.SetStateAction<Exclude[]>>;
   picks: number[];
   count: Count[];
+  colorObj: ColorObject[];
 }> = ({
   lastResultsPredict,
   setClicked,
@@ -19,6 +20,7 @@ const LastResultsPredict: React.FC<{
   setlastResultsPredict,
   picks,
   count,
+  colorObj,
 }) => {
   const handlePicks = (num: number) => {
     setPicks((data) => {
@@ -47,7 +49,14 @@ const LastResultsPredict: React.FC<{
                 }}
               >
                 <NumWrapWrapperPredict
-                  {...{ num, excludeArr, picks, lastResultsPredict, res }}
+                  {...{
+                    num,
+                    excludeArr,
+                    picks,
+                    lastResultsPredict,
+                    res,
+                    colorObj,
+                  }}
                 />
                 {count.map(
                   (obj) =>

@@ -1,7 +1,7 @@
 import React from "react";
 import useHandleXDraws from "../../hooks/useHandleXDraws";
 import NumWrap from "../NumWrap";
-import { colorObj, ColorObject, Exclude } from "../enums";
+import { ColorObject, Exclude } from "../enums";
 
 export const NumWrapWrapperPredict: React.FC<{
   num: number;
@@ -9,7 +9,8 @@ export const NumWrapWrapperPredict: React.FC<{
   picks: number[];
   lastResultsPredict: Exclude[];
   res: Exclude;
-}> = ({ num, excludeArr, picks, lastResultsPredict, res }) => {
+  colorObj: ColorObject[];
+}> = ({ num, excludeArr, picks, lastResultsPredict, res, colorObj }) => {
   const { handleXdraws } = useHandleXDraws();
 
   let props: { bg: ColorObject[] } = { bg: [] };
@@ -21,7 +22,15 @@ export const NumWrapWrapperPredict: React.FC<{
     }
   });
 
-  return <NumWrap excludeArr={excludeArr} picks={picks} num={num} {...props} />;
+  return (
+    <NumWrap
+      colorObj={colorObj}
+      excludeArr={excludeArr}
+      picks={picks}
+      num={num}
+      {...props}
+    />
+  );
 };
 
 export const NumWrapWrapperlastResult: React.FC<{
@@ -29,7 +38,8 @@ export const NumWrapWrapperlastResult: React.FC<{
   num: number;
   lastResults: Exclude[];
   res: Exclude;
-}> = ({ clicked, num, lastResults, res }) => {
+  colorObj: ColorObject[];
+}> = ({ clicked, num, lastResults, res, colorObj }) => {
   const { handleXdraws } = useHandleXDraws();
 
   let props: { bg: ColorObject[] } = { bg: [] };
@@ -39,7 +49,7 @@ export const NumWrapWrapperlastResult: React.FC<{
     }
   });
 
-  return <NumWrap clicked={clicked} num={num} {...props} />;
+  return <NumWrap colorObj={colorObj} clicked={clicked} num={num} {...props} />;
 };
 
 export const ColorsCountWrapper: React.FC<{
@@ -48,12 +58,24 @@ export const ColorsCountWrapper: React.FC<{
     count: number;
     desc: string;
   };
-}> = ({ color }) => {
+  colorObj: ColorObject[];
+  setShowPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  setColorObjId: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ color, colorObj, setColorObjId, setShowPicker }) => {
   let props: { bg: ColorObject[] } = { bg: [] };
   colorObj.forEach((obj) => {
     if (color.number === obj.color) {
       props.bg.push(obj);
     }
   });
-  return <NumWrap num={color.count} {...props} />;
+
+  const handleColorChange = () => {
+    setShowPicker((val) => !val);
+    setColorObjId(props.bg[0].id);
+  };
+  return (
+    <div onClick={handleColorChange}>
+      <NumWrap colorObj={colorObj} num={color.count} {...props} />
+    </div>
+  );
 };

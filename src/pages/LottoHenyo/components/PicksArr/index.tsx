@@ -1,6 +1,6 @@
 import axios from "axios";
 import React from "react";
-import { Exclude, Count } from "../enums";
+import { Exclude, Count, ColorObject } from "../enums";
 import NumWrap from "../NumWrap";
 import NumWrap2 from "../NumWrap2";
 import { NumWrapWrapperlastResult, NumWrapWrapperPredict } from "../Wrappers";
@@ -11,7 +11,15 @@ const PicksArr: React.FC<{
   excludeArr: number[];
   picks: number[];
   setPicksArr: any;
-}> = ({ picksArr, excludeArr, lastResultsPredict, picks, setPicksArr }) => {
+  colorObj: ColorObject[];
+}> = ({
+  picksArr,
+  excludeArr,
+  lastResultsPredict,
+  picks,
+  setPicksArr,
+  colorObj,
+}) => {
   const handleRemove = (id: number) => {
     const updateServer = async () => {
       axios.delete(`http://localhost:3500/picks/${id}`);
@@ -31,6 +39,7 @@ const PicksArr: React.FC<{
             <div onClick={() => handleRemove(arr.id)}>
               <NumWrapWrapperPredict
                 {...{
+                  colorObj,
                   num,
                   excludeArr,
                   picks,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Exclude } from "../enums";
+import { ColorObject, Exclude } from "../enums";
 import { NumWrapWrapperlastResult } from "../Wrappers";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
@@ -13,6 +13,7 @@ const LastResults: React.FC<{
   clicked: number;
   showClose: boolean;
   setlastResults: React.Dispatch<React.SetStateAction<Exclude[]>>;
+  colorObj: ColorObject[];
 }> = ({
   setlastResults,
   lastResults,
@@ -21,6 +22,7 @@ const LastResults: React.FC<{
   showClose,
   setPicks,
   maxNumber,
+  colorObj,
 }) => {
   const handleRemove = (chance: number, id: number | undefined) => {
     const updateServer = async () => {
@@ -55,7 +57,7 @@ const LastResults: React.FC<{
                   }}
                 >
                   <NumWrapWrapperlastResult
-                    {...{ clicked, lastResults, num, res }}
+                    {...{ clicked, lastResults, num, res, colorObj }}
                   />
                 </div>
               ))}
