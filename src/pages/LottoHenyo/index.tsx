@@ -13,6 +13,7 @@ import HomePage from "../HomePage";
 import PicksArr from "./components/PicksArr";
 import useHandleXDraws from "./hooks/useHandleXDraws";
 import ColorPicker from "./components/ColorPicker";
+import Guesses from "./components/Guesses";
 
 const LottoHenyo = () => {
   const [colorObj, setColorObj] = useState<ColorObject[]>([]);
@@ -22,6 +23,9 @@ const LottoHenyo = () => {
   const [lastResults, setlastResults] = useState<Exclude[]>([]);
   const [lastResultsPredict, setlastResultsPredict] = useState<Exclude[]>([]);
   const [picksArr, setPicksArr] = useState<{ picks: number[]; id: number }[]>(
+    []
+  );
+  const [guessArr, setGuessArr] = useState<{ guess: number[]; id: number }[]>(
     []
   );
   const [picks, setPicks] = useState<number[]>([]);
@@ -90,6 +94,84 @@ const LottoHenyo = () => {
       setlastResults(data);
       updateServer(data4);
     }
+  };
+
+  const setGuesses = (
+    lastResultsPredict: Exclude[],
+    excludeArr: number[],
+    colorCount: CountI[]
+  ) => {
+    const arr: { guess: number[]; id: number }[] = [];
+
+    const generateNumber = (maxNumber: number): number => {
+      // const number = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+      // const newNum = number.map(
+      //   (num) =>
+      // );
+      // const returnThis = newNum[Math.floor(Math.random() * 10) + 1];
+      return Math.floor(Math.random() * maxNumber) + 1;
+    };
+
+    const test = (percentage: number) => {
+      const data = [0, 0, 0, 0, 0];
+
+      const generatedPercentage = data
+        .map((num) => generateNumber(100))
+        .reduce((partialSum, a) => partialSum + a, 0);
+      // console.log("generatedPercentage", generatedPercentage / 5);
+      return generatedPercentage / 5 < percentage;
+    };
+    const nums: number[] = [];
+    let props2: { bg: ColorObject[] } = { bg: [] };
+
+    while (nums.length < 6) {
+      const num: number = generateNumber(maxNumber);
+
+      let props: { bg: ColorObject[] } = { bg: [] };
+
+      colorObj.forEach((obj) => {
+        if (handleXdraws(num, lastResultsPredict, 2, obj.count, obj.draws)) {
+          props.bg.push(obj);
+        }
+      });
+
+      const bgIsSame =
+        props2?.bg[props2.bg.length - 1]?.id === props?.bg[0]?.id;
+
+      let randomPercent = 0;
+      const randommMulty = generateNumber(2);
+      const exc = excludeArr.includes(num);
+      const allNatural =
+        props2.bg.filter((bg) => bg.id === props?.bg[0]?.id).length === 2;
+
+      const calculate = !bgIsSame ? props.bg[0].id + 10 : props.bg[0].id;
+      const addNum = colorCount.find((val) => val.desc === props.bg[0].color)
+        ?.number
+        ? colorCount.find((val) => val.desc === props.bg[0].color)?.count
+        : 0;
+      const addThis = addNum ? addNum : 0;
+      randomPercent = exc
+        ? (calculate + 5 + addThis) * randommMulty
+        : (calculate + addThis) * randommMulty;
+      const test1 = test(randomPercent);
+      // console.log("colorObj", colorObj);
+      if (!nums.includes(num) && nums.length < 6 && test1 && !allNatural) {
+        nums.push(num);
+        props2.bg.push(props.bg[0]);
+        // console.log("props", props);
+        // console.log("props2", props2);
+        // console.log("addNum", addNum);
+        // console.log("num", num);
+        // console.log("colorObj", colorObj);
+        // console.log("props", props);
+      }
+    }
+    arr.push({ guess: nums, id: generateNumber(1000000) });
+    setGuessArr((prev) => [...prev, ...arr]);
+    // console.log("test(100)", test(90));
+    // console.log("arr", arr);
+    // console.log("randomNumber", num);
   };
 
   const sortColor = () => {
@@ -237,7 +319,15 @@ const LottoHenyo = () => {
         </button>
         <button
           onClick={() => {
+            setGuesses(lastResultsPredict, excludeArr, colorCount);
+          }}
+        >
+          Guess
+        </button>
+        <button
+          onClick={() => {
             sortColor();
+            setGuessArr([]);
           }}
         >
           sort
@@ -282,6 +372,16 @@ const LottoHenyo = () => {
         <PicksArr
           {...{
             picksArr,
+            excludeArr,
+            lastResultsPredict,
+            picks,
+            setPicksArr,
+            colorObj,
+          }}
+        />
+        <Guesses
+          {...{
+            guessArr,
             excludeArr,
             lastResultsPredict,
             picks,
